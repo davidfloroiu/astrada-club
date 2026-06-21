@@ -70,13 +70,16 @@ export function Footer() {
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-line pt-8 text-xs text-muted sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} Astrada Club. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link href="/#" className="transition-colors hover:text-navy">
+            <Link href="/privacy" className="transition-colors hover:text-navy">
               Privacy
             </Link>
-            <Link href="/#" className="transition-colors hover:text-navy">
+            <Link href="/terms" className="transition-colors hover:text-navy">
               Terms
             </Link>
-            <Link href="/#" className="transition-colors hover:text-navy">
+            <Link
+              href="/code-of-conduct"
+              className="transition-colors hover:text-navy"
+            >
               Code of Conduct
             </Link>
           </div>
