@@ -94,7 +94,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Link href="/chat" className="card-surface focus-ring block p-5 transition-colors hover:border-azure/30">
           <div className="flex items-start justify-between">
-            <p className="text-xs uppercase tracking-wide text-faint">Community</p>
+            <p className="text-xs uppercase tracking-wide text-faint">Chat</p>
             <span className="grid h-9 w-9 place-items-center rounded-lg bg-azure/10 text-azure">
               <MessagesSquare className="h-[18px] w-[18px]" />
             </span>

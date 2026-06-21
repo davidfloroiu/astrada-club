@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   MessagesSquare,
+  Newspaper,
+  Mail,
   Users,
   CalendarDays,
   Gift,
@@ -22,7 +24,9 @@ import { cn } from "@/lib/utils";
 
 const nav = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/chat", label: "Community", icon: MessagesSquare },
+  { href: "/chat", label: "Chat", icon: MessagesSquare },
+  { href: "/forum", label: "Forum", icon: Newspaper },
+  { href: "/messages", label: "Messages", icon: Mail },
   { href: "/members", label: "Members", icon: Users },
   { href: "/events", label: "Events", icon: CalendarDays },
   { href: "/deals", label: "Perks", icon: Gift },
