@@ -10,59 +10,54 @@ export interface ProductAccessResult {
   accessLevel: AccessLevel;
 }
 
+/** Membership states that grant access (a trial counts — it has no payment yet). */
+const VALID_STATUSES = ["active", "trialing"] as const;
+
 export async function checkProductAccess(userId: string): Promise<ProductAccessResult> {
-  // Primary: the SDK's checkAccess. NOTE: it throws a 400 ("You are not authorized
-  // — ensure that you are a team member, or the app is installed") for ordinary
-  // users who aren't on the company team, so a throw here is NOT fatal — we treat
-  // it as inconclusive and fall through to the memberships API below. (Wrapping
-  // this is essential: an unhandled throw breaks the whole sign-in callback.)
+  // Best-effort fast path. NOTE: users.checkAccess throws a 400 ("not authorized
+  // — ensure you are a team member or the app is installed") for ordinary
+  // customers, so a throw here is expected and must never fail the flow.
   try {
     const res = await whopsdk.users.checkAccess(whop.productId, { id: userId });
     if (res.has_access) {
       return {
         hasAccess: true,
-        accessLevel: res.access_level as AccessLevel,
+        accessLevel: (res.access_level as AccessLevel) ?? "customer",
       };
     }
-  } catch (err) {
-    console.error("[whop] checkAccess failed; falling back to memberships API", err);
+  } catch {
+    // Expected for non-team members — fall through to the memberships lookup.
   }
 
-  // Fallback: checkAccess returns false (or throws) for `trialing` memberships
-  // (no payment method attached). Query the memberships API directly and treat
-  // `active` + `trialing` as valid. This is also our source of truth for normal
-  // members when checkAccess is unavailable.
+  // Reliable check: list this user's memberships via the SDK (scoped by
+  // company_id, which the app key IS authorized for via member:basic:read) and
+  // accept any active/trialing membership on our product. The legacy
+  // /api/v2/memberships REST endpoint does NOT work with the app key, which is
+  // why trial members were being locked out.
   try {
-    const params = new URLSearchParams();
-    params.append("product_ids[]", whop.productId);
-    params.append("user_ids[]", userId);
-    params.append("per", "5");
+    const page = await whopsdk.memberships.list({
+      company_id: whop.companyId,
+      user_ids: [userId],
+      statuses: [...VALID_STATUSES],
+      first: 10,
+    });
 
-    const fallbackRes = await fetch(
-      `https://api.whop.com/api/v2/memberships?${params.toString()}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.WHOP_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
+    const memberships = page.data ?? [];
+    const valid = memberships.find(
+      (m) =>
+        m.product?.id === whop.productId &&
+        (m.status === "active" || m.status === "trialing"),
     );
 
-    if (fallbackRes.ok) {
-      const data = await fallbackRes.json();
-      const memberships: Array<{ status: string; access_pass: { id: string } }> =
-        data?.data ?? [];
-
-      const validMembership = memberships.find(
-        (m) => m.status === "active" || m.status === "trialing"
-      );
-
-      if (validMembership) {
-        return { hasAccess: true, accessLevel: "customer" };
-      }
+    if (valid) {
+      return { hasAccess: true, accessLevel: "customer" };
     }
+
+    console.log(
+      `[whop] no active/trialing membership for ${userId} on ${whop.productId} (found ${memberships.length})`,
+    );
   } catch (err) {
-    console.error("[whop] memberships fallback failed", err);
+    console.error("[whop] memberships.list failed", err);
   }
 
   return { hasAccess: false, accessLevel: "no_access" };
