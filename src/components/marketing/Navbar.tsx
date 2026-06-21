@@ -13,7 +13,7 @@ const navLinks = [
   { href: "/#club", label: "The Club" },
   { href: "/#benefits", label: "Membership" },
   { href: "/#who", label: "Who it's for" },
-  { href: "/#join", label: "Join" },
+  { href: "/#join", label: "Apply" },
   { href: "/#faq", label: "FAQ" },
 ];
 
@@ -72,7 +72,7 @@ export function Navbar() {
                   Member login
                 </Button>
                 <Button href="/#join" size="sm">
-                  Join
+                  Apply
                 </Button>
               </>
             )}
@@ -115,7 +115,7 @@ export function Navbar() {
                       Member login
                     </Button>
                     <Button href="/#join" size="md">
-                      Join Astrada
+                      Apply to join
                     </Button>
                   </>
                 )}

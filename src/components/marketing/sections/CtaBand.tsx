@@ -29,7 +29,7 @@ export function CtaBand() {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button href="/#join" variant="light" size="lg">
-              Join Astrada
+              Apply to join
               <ArrowRight className="h-4 w-4" />
             </Button>
             <Button

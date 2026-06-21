@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/ui/Reveal";
-import { CheckoutPlans } from "@/components/marketing/CheckoutPlans";
+import { ApplicationForm } from "@/components/marketing/ApplicationForm";
 
 const included = [
   "The live community chat",
@@ -22,16 +22,17 @@ export function Membership() {
       <Container size="wide">
         <Reveal className="mx-auto max-w-2xl text-center">
           <div className="flex justify-center">
-            <SectionLabel>Join</SectionLabel>
+            <SectionLabel>Apply</SectionLabel>
           </div>
           <h2 className="mt-6 text-balance font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl">
-            Become a founding member
+            Apply for membership
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-slate">
-            Join the founding circle for{" "}
+            Astrada is application-only. Membership is{" "}
             <span className="font-medium text-ink">$49/month</span> or{" "}
-            <span className="font-medium text-ink">$400/year</span>. Checkout is
-            secure and happens right here.
+            <span className="font-medium text-ink">$400/year</span> — but first,
+            tell us about you. We read every application and invite the founders
+            who fit.
           </p>
         </Reveal>
 
@@ -51,13 +52,13 @@ export function Membership() {
             </ul>
             <div className="silver-divider my-7 w-24" />
             <p className="text-sm leading-relaxed text-slate">
-              Membership runs on Whop. After joining, sign in with Whop to enter
-              the members&rsquo; area — your community, all in one place.
+              Membership runs on Whop. Approved founders receive an invitation to
+              join; from there you sign in to enter the members&rsquo; area.
             </p>
           </Reveal>
 
           <Reveal delay={80}>
-            <CheckoutPlans />
+            <ApplicationForm />
           </Reveal>
         </div>
       </Container>

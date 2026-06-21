@@ -9,7 +9,7 @@ const columns = [
       { href: "/#club", label: "The Club" },
       { href: "/#benefits", label: "Membership" },
       { href: "/#who", label: "Who it's for" },
-      { href: "/#join", label: "Join" },
+      { href: "/#join", label: "Apply" },
     ],
   },
   {
@@ -25,7 +25,7 @@ const columns = [
     title: "Company",
     links: [
       { href: "/#faq", label: "FAQ" },
-      { href: "/#join", label: "Join" },
+      { href: "/#join", label: "Apply" },
       { href: "mailto:hello@astradaclub.com", label: "Contact" },
     ],
   },

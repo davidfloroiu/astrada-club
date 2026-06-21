@@ -52,7 +52,7 @@ export default async function LoginPage({
       <p className="text-center text-sm text-muted">
         Not a member yet?{" "}
         <Link href="/join" className="text-azure hover:text-azure-bright">
-          Become a founding member
+          Apply to join
         </Link>
       </p>
 
