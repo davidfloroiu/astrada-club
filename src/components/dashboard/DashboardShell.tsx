@@ -9,6 +9,7 @@ import {
   Newspaper,
   Mail,
   Users,
+  UserPlus,
   CalendarDays,
   Gift,
   LogOut,
@@ -29,6 +30,7 @@ const nav = [
   { href: "/forum", label: "Forum", icon: Newspaper },
   { href: "/messages", label: "Messages", icon: Mail },
   { href: "/members", label: "Members", icon: Users },
+  { href: "/network", label: "Network", icon: UserPlus },
   { href: "/events", label: "Events", icon: CalendarDays },
   { href: "/deals", label: "Perks", icon: Gift },
 ];

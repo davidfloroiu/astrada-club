@@ -1,37 +1,31 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Search } from "lucide-react";
-import { MemberCard } from "@/components/members/MemberCard";
-import { Button } from "@/components/ui/Button";
-import { members } from "@/lib/data";
+import { Avatar } from "@/components/ui/Avatar";
+import { ConnectButton } from "@/components/network/ConnectButton";
+import type { DirectoryMember } from "@/lib/members/directory";
+import type { ConnectionStatus } from "@/lib/network/store";
 
-export function MembersDirectory() {
+export type DirectoryEntry = DirectoryMember & { status: ConnectionStatus };
+
+/**
+ * The member directory — real members from Whop, each with a connect control.
+ * Search is client-side over the provided list.
+ */
+export function MembersDirectory({ members }: { members: DirectoryEntry[] }) {
   const [query, setQuery] = useState("");
-  const [industry, setIndustry] = useState<string>("All");
-
-  const industries = useMemo(
-    () => ["All", ...Array.from(new Set(members.map((m) => m.industry))).sort()],
-    [],
-  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return members.filter((m) => {
-      const matchesQuery =
-        q === "" ||
+    if (!q) return members;
+    return members.filter(
+      (m) =>
         m.name.toLowerCase().includes(q) ||
-        m.company.toLowerCase().includes(q) ||
-        m.city.toLowerCase().includes(q);
-      const matchesIndustry = industry === "All" || m.industry === industry;
-      return matchesQuery && matchesIndustry;
-    });
-  }, [query, industry]);
-
-  const resetFilters = () => {
-    setQuery("");
-    setIndustry("All");
-  };
+        m.username.toLowerCase().includes(q),
+    );
+  }, [query, members]);
 
   if (members.length === 0) {
     return (
@@ -40,8 +34,8 @@ export function MembersDirectory() {
           The directory is just getting started
         </p>
         <p className="max-w-md text-sm leading-relaxed text-slate">
-          As founding members join, they&rsquo;ll appear here — with what
-          they&rsquo;re building and a way to ask for a warm introduction.
+          As founding members join, they&rsquo;ll appear here — connect with them,
+          see who you both know, and ask for a warm introduction.
         </p>
       </div>
     );
@@ -56,44 +50,52 @@ export function MembersDirectory() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name, company, or city"
-            className="w-full rounded-xl border border-line bg-paper px-4 py-3 pl-10 text-sm text-ink placeholder:text-faint focus-ring transition-colors sm:w-72"
+            placeholder="Search by name or username"
+            className="w-full rounded-xl border border-line bg-paper px-4 py-3 pl-10 text-sm text-ink placeholder:text-faint focus-ring transition-colors sm:w-80"
             aria-label="Search members"
           />
         </div>
-
-        <select
-          value={industry}
-          onChange={(e) => setIndustry(e.target.value)}
-          className="w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-faint focus-ring transition-colors sm:w-auto"
-          aria-label="Filter by industry"
-        >
-          {industries.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt === "All" ? "All industries" : opt}
-            </option>
-          ))}
-        </select>
       </div>
 
       <p className="mb-4 text-sm text-muted">
         {filtered.length} {filtered.length === 1 ? "member" : "members"}
       </p>
 
-      {filtered.length === 0 ? (
-        <div className="card-surface flex flex-col items-center gap-4 px-6 py-16 text-center">
-          <p className="text-sm text-muted">No members match your filters.</p>
-          <Button onClick={resetFilters} variant="secondary" size="sm">
-            Reset filters
-          </Button>
-        </div>
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((m) => (
-            <MemberCard key={m.id} member={m} href={`/members/${m.id}`} />
-          ))}
-        </div>
-      )}
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((m) => (
+          <article key={m.userId} className="card-surface flex h-full flex-col p-6">
+            <Link
+              href={`/members/${m.userId}`}
+              className="focus-ring flex items-start gap-4 rounded-xl"
+            >
+              <Avatar name={m.name} size="lg" />
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate font-display text-xl font-semibold leading-tight tracking-tight text-ink">
+                  {m.name}
+                </h3>
+                {m.username && (
+                  <p className="truncate text-sm text-slate">@{m.username}</p>
+                )}
+                {m.isAdmin && (
+                  <span className="mt-1 inline-block rounded-full bg-azure/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-azure-deep">
+                    Team
+                  </span>
+                )}
+              </div>
+            </Link>
+
+            <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+              <Link
+                href={`/members/${m.userId}`}
+                className="text-xs text-muted transition-colors hover:text-navy"
+              >
+                View profile
+              </Link>
+              <ConnectButton userId={m.userId} initialStatus={m.status} />
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
