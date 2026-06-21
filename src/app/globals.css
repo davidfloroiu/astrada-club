@@ -1,26 +1,215 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────
+   Astrada — design tokens
+   Quiet Riviera luxury: deep navy, platinum/silver, crisp white,
+   a Mediterranean azure accent. Bright, airy, elevated, restrained.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  /* Surfaces — Warm Paper brand ground */
+  --color-canvas: #edebe5;      /* Warm Paper (brand) */
+  --color-paper: #fbfaf6;       /* warm white cards / elevated surfaces */
+  --color-mist: #e5e2d9;        /* subtle tinted sections */
+  --color-cloud: #d8d4c9;       /* deeper tint */
+
+  /* Deep Navy brand (dark sections, primary buttons, ink) */
+  --color-navy: #0e1b30;
+  --color-navy-600: #1b2c46;
+  --color-navy-400: #36465f;
+
+  /* Ink / text */
+  --color-ink: #0e1b30;         /* primary text — Deep Navy */
+  --color-slate: #46506a;       /* secondary text */
+  --color-muted: #6e7588;       /* tertiary text */
+  --color-faint: #9a9aa6;       /* faint labels */
+
+  /* Lines */
+  --color-line: rgba(14, 27, 48, 0.10);
+  --color-line-strong: rgba(14, 27, 48, 0.16);
+  --color-line-light: rgba(255, 255, 255, 0.14);
+
+  /* Accent — navy family (lifted from Deep Navy for interactive states) */
+  --color-azure: #27456e;
+  --color-azure-bright: #34568a;
+  --color-azure-deep: #16284a;
+
+  /* Platinum / silver (brand) */
+  --color-platinum: #c5cad3;
+  --color-platinum-bright: #f3f5f8;
+  --color-platinum-deep: #9aa1ad;
+
+  /* Status */
+  --color-positive: #1f9d6b;
+
+  /* Type */
+  --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+
+  /* Easing & radius */
+  --radius-card: 18px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Shadows — soft, layered, premium */
+  --shadow-card: 0 1px 2px rgba(11, 27, 51, 0.04), 0 8px 24px -12px rgba(11, 27, 51, 0.14);
+  --shadow-lift: 0 2px 4px rgba(11, 27, 51, 0.05), 0 24px 48px -20px rgba(11, 27, 51, 0.22);
+  --shadow-navy: 0 18px 50px -16px rgba(10, 29, 58, 0.45);
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(197, 202, 211, 0.55);
+  color: var(--color-navy);
+}
+
+/* Display headings — refined, high-contrast serif */
+.font-display {
+  letter-spacing: -0.01em;
+}
+
+/* Ambient platinum wash for the warm-paper page background */
+.bg-ambient {
+  background-color: var(--color-canvas);
+  background-image:
+    radial-gradient(58rem 40rem at 82% -6%, rgba(197, 202, 211, 0.45), transparent 60%),
+    radial-gradient(46rem 34rem at 4% 4%, rgba(14, 27, 48, 0.05), transparent 62%);
+}
+
+/* A deep-navy band, for high-contrast sections */
+.section-navy {
+  background:
+    radial-gradient(70rem 40rem at 80% -10%, rgba(197, 202, 211, 0.16), transparent 60%),
+    linear-gradient(180deg, #16263f, var(--color-navy));
+  color: #eceff3;
+}
+
+/* ── Helpers ───────────────────────────────────────────────── */
+.text-navy-gradient {
+  background: linear-gradient(120deg, var(--color-navy) 10%, var(--color-azure) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-platinum-gradient {
+  background: linear-gradient(120deg, #f3f5f8, #c5cad3 55%, #9aa1ad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hairline {
+  border: 1px solid var(--color-line);
+}
+
+/* White card with fine border + soft depth */
+.card-surface {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Glassy card for use on navy sections */
+.card-glass {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(8px);
+}
+
+.silver-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-platinum), transparent);
+}
+
+/* Thin platinum frame accent */
+.platinum-ring {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0 0 1px var(--color-line);
+}
+
+/* Focus ring */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-canvas), 0 0 0 4px rgba(39, 69, 110, 0.55);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-mist);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-platinum);
+  border-radius: 999px;
+  border: 3px solid var(--color-mist);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-platinum-deep);
+}
+
+/* ── Animations ────────────────────────────────────────────── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes drift {
+  0% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(14px) translateY(-10px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+.animate-rise { animation: rise 0.8s var(--ease-out-expo) both; }
+.animate-fade { animation: fade 1s ease both; }
+.animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
+.animate-drift { animation: drift 16s ease-in-out infinite; }
+
+/* Reveal-on-scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
 }

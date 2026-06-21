@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" width="720" height="200">
+  
+  <g fill="#0E1B30" transform="translate(60 38) scale(1.04)">
+  <path d="M56 3 Q57.6 15.5 63.2 20 Q57.6 24.5 56 35 Q54.4 24.5 48.8 20 Q54.4 15.5 56 3 Z"></path>
+  <path d="M56 38 L58.7 62 L53.3 62 Z"></path>
+  <path d="M56 57 C51 75 47 90 43 103 C41.8 106.4 38.6 106.6 38.2 103.2 C40 91.5 46 74 56 57 Z"></path>
+  <path d="M56 57 C61 75 65 90 69 103 C70.2 106.4 73.4 106.6 73.8 103.2 C72 91.5 66 74 56 57 Z"></path>
+  </g>
+  <line x1="200" y1="58" x2="200" y2="142" stroke="rgba(14,27,48,0.18)" stroke-width="1"></line>
+  <text x="238" y="106" font-family="&#39;Cormorant Garamond&#39;, Georgia, serif" font-weight="500" font-size="54" letter-spacing="8" fill="#0E1B30">ASTRADA</text>
+  <text x="241" y="138" font-family="Arial, Helvetica, sans-serif" font-size="13" letter-spacing="7" fill="#8A8578">CLUB</text>
+</svg>
