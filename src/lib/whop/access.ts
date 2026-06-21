@@ -11,18 +11,27 @@ export interface ProductAccessResult {
 }
 
 export async function checkProductAccess(userId: string): Promise<ProductAccessResult> {
-  // Primary: use the SDK's checkAccess
-  const res = await whopsdk.users.checkAccess(whop.productId, { id: userId });
-
-  if (res.has_access) {
-    return {
-      hasAccess: true,
-      accessLevel: res.access_level as AccessLevel,
-    };
+  // Primary: the SDK's checkAccess. NOTE: it throws a 400 ("You are not authorized
+  // — ensure that you are a team member, or the app is installed") for ordinary
+  // users who aren't on the company team, so a throw here is NOT fatal — we treat
+  // it as inconclusive and fall through to the memberships API below. (Wrapping
+  // this is essential: an unhandled throw breaks the whole sign-in callback.)
+  try {
+    const res = await whopsdk.users.checkAccess(whop.productId, { id: userId });
+    if (res.has_access) {
+      return {
+        hasAccess: true,
+        accessLevel: res.access_level as AccessLevel,
+      };
+    }
+  } catch (err) {
+    console.error("[whop] checkAccess failed; falling back to memberships API", err);
   }
 
-  // Fallback: checkAccess returns false for `trialing` memberships (no payment method attached).
-  // Directly query the memberships API and treat `active` + `trialing` as valid.
+  // Fallback: checkAccess returns false (or throws) for `trialing` memberships
+  // (no payment method attached). Query the memberships API directly and treat
+  // `active` + `trialing` as valid. This is also our source of truth for normal
+  // members when checkAccess is unavailable.
   try {
     const params = new URLSearchParams();
     params.append("product_ids[]", whop.productId);
@@ -52,8 +61,8 @@ export async function checkProductAccess(userId: string): Promise<ProductAccessR
         return { hasAccess: true, accessLevel: "customer" };
       }
     }
-  } catch {
-    // fallback failed — default to no access
+  } catch (err) {
+    console.error("[whop] memberships fallback failed", err);
   }
 
   return { hasAccess: false, accessLevel: "no_access" };
