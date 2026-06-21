@@ -1,6 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/whop/session";
-import { listPosts, createPost, ForumWriteError } from "@/lib/whop/forum";
+import {
+  listPosts,
+  createPost,
+  isDbConfigured,
+  ForumUnavailable,
+  type Author,
+} from "@/lib/forum/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,12 +14,26 @@ export const dynamic = "force-dynamic";
 const TITLE_MAX = 140;
 const CONTENT_MAX = 5000;
 
+function authorFromSession(s: {
+  userId?: string;
+  name?: string;
+  username?: string;
+  accessLevel?: string;
+}): Author {
+  return {
+    id: s.userId!,
+    name: s.name ?? "Member",
+    username: s.username,
+    isAdmin: s.accessLevel === "admin",
+  };
+}
+
 export async function GET(): Promise<Response> {
   const session = await getSession();
   if (!session.userId || !session.hasAccess) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const posts = await listPosts();
+  const posts = await listPosts(session.userId);
   return NextResponse.json({ posts });
 }
 
@@ -27,6 +47,12 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!session.userId || !session.hasAccess) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (!isDbConfigured()) {
+    return NextResponse.json(
+      { error: "Posting isn't available yet — the database is still being set up." },
+      { status: 503 },
+    );
+  }
 
   let body: CreatePayload;
   try {
@@ -39,21 +65,22 @@ export async function POST(request: NextRequest): Promise<Response> {
   const content = (body.content ?? "").trim();
 
   if (!title || !content) {
-    return NextResponse.json(
-      { error: "Add a title and a message." },
-      { status: 422 },
-    );
+    return NextResponse.json({ error: "Add a title and a message." }, { status: 422 });
   }
   if (title.length > TITLE_MAX || content.length > CONTENT_MAX) {
     return NextResponse.json({ error: "That's a bit too long." }, { status: 422 });
   }
 
   try {
-    const post = await createPost({ userId: session.userId, title, content });
+    const post = await createPost({
+      author: authorFromSession(session),
+      title,
+      content,
+    });
     return NextResponse.json({ post }, { status: 201 });
   } catch (err) {
-    if (err instanceof ForumWriteError) {
-      return NextResponse.json({ error: err.message }, { status: 502 });
+    if (err instanceof ForumUnavailable) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
     }
     console.error("[forum] POST /posts failed", err);
     return NextResponse.json(

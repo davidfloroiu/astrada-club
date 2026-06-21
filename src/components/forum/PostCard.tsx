@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { MessageCircle, Heart, Pin } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
-import type { ForumPost } from "@/lib/whop/forum";
-import { timeAgo } from "@/lib/utils";
+import type { ForumPost } from "@/lib/forum/store";
+import { cn, timeAgo } from "@/lib/utils";
 
 /** A post in the forum board list. Links through to the full thread. */
 export function PostCard({ post }: { post: ForumPost }) {
@@ -48,12 +48,12 @@ export function PostCard({ post }: { post: ForumPost }) {
           <MessageCircle className="h-4 w-4" />
           {post.commentCount} {post.commentCount === 1 ? "reply" : "replies"}
         </span>
-        {post.likeCount > 0 && (
-          <span className="inline-flex items-center gap-1.5">
-            <Heart className="h-4 w-4" />
-            {post.likeCount}
-          </span>
-        )}
+        <span className="inline-flex items-center gap-1.5">
+          <Heart
+            className={cn("h-4 w-4", post.likedByMe && "fill-rose-500 text-rose-500")}
+          />
+          {post.likeCount}
+        </span>
         <span className="ml-auto text-azure opacity-0 transition-opacity group-hover:opacity-100">
           Open thread →
         </span>

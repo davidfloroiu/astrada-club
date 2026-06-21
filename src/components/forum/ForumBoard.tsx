@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { PenSquare } from "lucide-react";
-import type { ForumPost } from "@/lib/whop/forum";
+import type { ForumPost } from "@/lib/forum/store";
 import { PostCard } from "@/components/forum/PostCard";
 import { PostComposer } from "@/components/forum/PostComposer";
 

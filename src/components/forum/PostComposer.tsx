@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import type { ForumPost } from "@/lib/whop/forum";
+import type { ForumPost } from "@/lib/forum/store";
 import { cn } from "@/lib/utils";
 
 const fieldClass =

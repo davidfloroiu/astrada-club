@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
-import type { ForumComment } from "@/lib/whop/forum";
+import type { ForumComment } from "@/lib/forum/store";
 import { timeAgo } from "@/lib/utils";
 
 /**

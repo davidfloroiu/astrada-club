@@ -1,11 +1,31 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/whop/session";
-import { listComments, createComment, ForumWriteError } from "@/lib/whop/forum";
+import {
+  listComments,
+  createComment,
+  isDbConfigured,
+  ForumUnavailable,
+  type Author,
+} from "@/lib/forum/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const CONTENT_MAX = 5000;
+
+function authorFromSession(s: {
+  userId?: string;
+  name?: string;
+  username?: string;
+  accessLevel?: string;
+}): Author {
+  return {
+    id: s.userId!,
+    name: s.name ?? "Member",
+    username: s.username,
+    isAdmin: s.accessLevel === "admin",
+  };
+}
 
 export async function GET(
   _request: NextRequest,
@@ -34,6 +54,13 @@ export async function POST(
   }
   const { id } = await ctx.params;
 
+  if (!isDbConfigured()) {
+    return NextResponse.json(
+      { error: "Replies aren't available yet — the database is still being set up." },
+      { status: 503 },
+    );
+  }
+
   let body: CreatePayload;
   try {
     body = (await request.json()) as CreatePayload;
@@ -51,14 +78,14 @@ export async function POST(
 
   try {
     const comment = await createComment({
-      userId: session.userId,
+      author: authorFromSession(session),
       postId: id,
       content,
     });
     return NextResponse.json({ comment }, { status: 201 });
   } catch (err) {
-    if (err instanceof ForumWriteError) {
-      return NextResponse.json({ error: err.message }, { status: 502 });
+    if (err instanceof ForumUnavailable) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
     }
     console.error("[forum] POST /comments failed", err);
     return NextResponse.json(
