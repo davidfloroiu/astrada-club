@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@vercel/postgres": "^0.10.0",
     "@whop/checkout": "^0.1.0",
     "@whop/embedded-components-react-js": "^1.0.0",
     "@whop/embedded-components-vanilla-js": "^1.0.0",

@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Calendar,
   Gift,
+  MapPin,
   Sparkles,
   MessagesSquare,
   BadgeCheck,
@@ -13,10 +15,27 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { useAuth } from "@/lib/auth";
-import { events, perks } from "@/lib/data";
+import { perks } from "@/lib/data";
+import { formatDate } from "@/lib/utils";
+import type { ClubEvent } from "@/lib/types";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const [events, setEvents] = useState<ClubEvent[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/events")
+      .then((r) => (r.ok ? r.json() : { events: [] }))
+      .then((d: { events?: ClubEvent[] }) => {
+        if (active) setEvents(d.events ?? []);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   if (!user) return null;
 
   const firstName = user.name.split(" ")[0];
@@ -25,6 +44,12 @@ export default function DashboardPage() {
     month: "long",
     day: "numeric",
   });
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const upcoming = events
+    .filter((e) => e.date >= todayIso)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 3);
 
   const featuredPerks = perks.slice(0, 3);
 
@@ -90,7 +115,9 @@ export default function DashboardPage() {
           <p className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink">
             Active
           </p>
-          <p className="mt-1 text-xs text-muted">Founding member</p>
+          <p className="mt-1 text-xs text-muted">
+            {user.isAdmin ? "Team · admin" : "Founding member"}
+          </p>
         </div>
 
         <Link
@@ -106,10 +133,10 @@ export default function DashboardPage() {
             </span>
           </div>
           <p className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
-            {events.length}
+            {upcoming.length}
           </p>
           <p className="mt-1 text-xs text-muted">
-            {events.length === 0 ? "None scheduled yet" : "On the calendar"}
+            {upcoming.length === 0 ? "None scheduled yet" : "On the calendar"}
           </p>
         </Link>
 
@@ -134,11 +161,65 @@ export default function DashboardPage() {
       <div className="flex items-start gap-3 rounded-xl border border-line bg-mist/60 px-4 py-3">
         <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-azure" />
         <p className="text-sm leading-relaxed text-slate">
-          The chat is live. Events are added by founding members and the team —
-          and the perks below are samples we&rsquo;re lining up as the founding
-          circle forms.
+          The chat is live. Events are posted by admins and moderators — and the
+          perks below are samples we&rsquo;re lining up as the founding circle
+          forms.
         </p>
       </div>
+
+      {/* Upcoming events */}
+      {upcoming.length > 0 && (
+        <section className="space-y-5">
+          <div className="flex items-end justify-between gap-4">
+            <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
+              Upcoming events
+            </h2>
+            <Link
+              href="/events"
+              className="focus-ring text-sm text-azure hover:text-azure-bright"
+            >
+              View all
+            </Link>
+          </div>
+
+          <div className="space-y-3">
+            {upcoming.map((event) => {
+              const d = new Date(event.date + "T00:00:00");
+              const day = d.getDate();
+              const month = d.toLocaleDateString("en-US", { month: "short" });
+              return (
+                <Link
+                  key={event.id}
+                  href="/events"
+                  className="card-surface focus-ring flex flex-col gap-4 p-5 transition-colors hover:border-azure/30 sm:flex-row sm:items-center"
+                >
+                  <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl border border-line bg-mist">
+                    <span className="font-display text-2xl font-semibold leading-none tracking-tight text-ink">
+                      {day}
+                    </span>
+                    <span className="mt-1 text-[11px] uppercase tracking-wide text-faint">
+                      {month}
+                    </span>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-display text-base font-semibold tracking-tight text-ink">
+                      {event.title}
+                    </h3>
+                    <p className="mt-1 flex items-center gap-1.5 truncate text-sm text-slate">
+                      <MapPin className="h-3.5 w-3.5 shrink-0 text-faint" />
+                      {event.city} · {event.venue}
+                    </p>
+                    <p className="mt-1 text-xs text-faint">
+                      {formatDate(event.date)} · {event.time}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Perks we're lining up */}
       <section className="space-y-5">

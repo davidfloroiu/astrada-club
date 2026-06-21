@@ -13,7 +13,35 @@ export interface ProductAccessResult {
 /** Membership states that grant access (a trial counts — it has no payment yet). */
 const VALID_STATUSES = ["active", "trialing"] as const;
 
+/** Whop team roles treated as admins/moderators (can create events, manage). */
+const ADMIN_ROLES = new Set(["owner", "admin", "moderator"]);
+
+/**
+ * Is this user an admin/moderator on the company team? Checked via the company's
+ * authorized users (requires the company API key). Fails closed (false).
+ */
+export async function isCompanyAdmin(userId: string): Promise<boolean> {
+  try {
+    const page = await whopsdk.authorizedUsers.list({
+      company_id: whop.companyId,
+      user_id: userId,
+      first: 1,
+    });
+    const entry = (page.data ?? [])[0];
+    return Boolean(entry && ADMIN_ROLES.has(entry.role));
+  } catch (err) {
+    console.error("[whop] authorized-user (admin) check failed", err);
+    return false;
+  }
+}
+
 export async function checkProductAccess(userId: string): Promise<ProductAccessResult> {
+  // Company admins/moderators always have access — and the "admin" level unlocks
+  // event creation and other management UI.
+  if (await isCompanyAdmin(userId)) {
+    return { hasAccess: true, accessLevel: "admin" };
+  }
+
   // Best-effort fast path. NOTE: users.checkAccess throws a 400 ("not authorized
   // — ensure you are a team member or the app is installed") for ordinary
   // customers, so a throw here is expected and must never fail the flow.
@@ -30,10 +58,8 @@ export async function checkProductAccess(userId: string): Promise<ProductAccessR
   }
 
   // Reliable check: list this user's memberships via the SDK (scoped by
-  // company_id, which the app key IS authorized for via member:basic:read) and
-  // accept any active/trialing membership on our product. The legacy
-  // /api/v2/memberships REST endpoint does NOT work with the app key, which is
-  // why trial members were being locked out.
+  // company_id, which the company key is authorized for) and accept any
+  // active/trialing membership on our product.
   try {
     const page = await whopsdk.memberships.list({
       company_id: whop.companyId,

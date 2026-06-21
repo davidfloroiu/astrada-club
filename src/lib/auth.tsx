@@ -20,6 +20,8 @@ export interface AuthUser {
   username?: string;
   profilePicture?: string;
   hasAccess: boolean;
+  /** Owner/admin/moderator on the company team — can create events, manage. */
+  isAdmin: boolean;
 }
 
 interface AuthContextValue {

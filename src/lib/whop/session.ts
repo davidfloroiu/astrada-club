@@ -48,6 +48,8 @@ export interface SessionUser {
   username?: string;
   profilePicture?: string;
   hasAccess: boolean;
+  /** Owner/admin/moderator on the company team — can create events, manage. */
+  isAdmin: boolean;
 }
 
 export function toSessionUser(s: SessionData): SessionUser | null {
@@ -59,5 +61,6 @@ export function toSessionUser(s: SessionData): SessionUser | null {
     username: s.username,
     profilePicture: s.profilePicture,
     hasAccess: Boolean(s.hasAccess),
+    isAdmin: s.accessLevel === "admin",
   };
 }

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { events } from "@/lib/data";
+import { Plus } from "lucide-react";
 import type { ClubEvent, EventType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { CreateEventDialog } from "@/components/events/CreateEventDialog";
 
 type Filter = EventType | "all";
 
@@ -42,9 +43,12 @@ function EventCard({
     .toLocaleDateString("en-US", { month: "short" })
     .toUpperCase();
 
+  const uncapped = event.capacity <= 0;
   const taken = event.capacity - event.spotsLeft;
-  const filledPct = Math.min(100, Math.max(0, (taken / event.capacity) * 100));
-  const lowAvailability = event.spotsLeft <= 3;
+  const filledPct = uncapped
+    ? 0
+    : Math.min(100, Math.max(0, (taken / event.capacity) * 100));
+  const lowAvailability = !uncapped && event.spotsLeft <= 3;
 
   return (
     <div className="card-surface flex flex-col gap-5 p-5 sm:flex-row sm:p-6">
@@ -74,9 +78,11 @@ function EventCard({
           <Avatar name={event.host} size="sm" />
           <span className="text-sm text-slate">Hosted by {event.host}</span>
         </div>
-        <p className="mt-3 line-clamp-2 text-sm text-slate">
-          {event.description}
-        </p>
+        {event.description ? (
+          <p className="mt-3 line-clamp-2 text-sm text-slate">
+            {event.description}
+          </p>
+        ) : null}
       </div>
 
       {/* Right / capacity + RSVP */}
@@ -88,14 +94,18 @@ function EventCard({
               lowAvailability ? "text-azure-deep" : "text-muted",
             )}
           >
-            {event.spotsLeft} of {event.capacity} spots left
+            {uncapped
+              ? "Open capacity"
+              : `${event.spotsLeft} of ${event.capacity} spots left`}
           </p>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-cloud">
-            <div
-              className="h-full rounded-full bg-azure"
-              style={{ width: `${filledPct}%` }}
-            />
-          </div>
+          {!uncapped && (
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-cloud">
+              <div
+                className="h-full rounded-full bg-azure"
+                style={{ width: `${filledPct}%` }}
+              />
+            </div>
+          )}
         </div>
         <Button
           size="sm"
@@ -110,30 +120,34 @@ function EventCard({
   );
 }
 
-export function EventsBoard() {
+export function EventsBoard({
+  initialEvents,
+  canCreate = false,
+}: {
+  initialEvents: ClubEvent[];
+  canCreate?: boolean;
+}) {
+  const [events, setEvents] = useState<ClubEvent[]>(initialEvents);
   const [type, setType] = useState<Filter>("all");
   const [reserved, setReserved] = useState<Set<string>>(new Set());
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const toggle = (id: string) => {
     setReserved((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
 
-  const visible = [...events]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .filter((e) => type === "all" || e.type === type);
+  const sorted = [...events].sort((a, b) => a.date.localeCompare(b.date));
+  const visible = sorted.filter((e) => type === "all" || e.type === type);
 
   return (
     <div>
-      {/* Filter tabs */}
-      <div className="flex flex-wrap gap-2">
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-2">
         {FILTERS.map((f) => {
           const active = type === f.value;
           return (
@@ -152,6 +166,16 @@ export function EventsBoard() {
             </button>
           );
         })}
+        {canCreate && (
+          <Button
+            size="sm"
+            onClick={() => setDialogOpen(true)}
+            className="ml-auto"
+          >
+            <Plus className="h-4 w-4" />
+            Create event
+          </Button>
+        )}
       </div>
 
       {/* Event list */}
@@ -164,12 +188,39 @@ export function EventsBoard() {
             onToggle={toggle}
           />
         ))}
+
         {visible.length === 0 && (
-          <p className="py-12 text-center text-sm text-slate">
-            No events in this category yet. Check back soon.
-          </p>
+          <div className="card-surface flex flex-col items-center gap-3 px-6 py-16 text-center">
+            <p className="font-display text-lg font-semibold tracking-tight text-ink">
+              {events.length === 0
+                ? "No events scheduled yet"
+                : "Nothing in this category yet"}
+            </p>
+            <p className="max-w-md text-sm leading-relaxed text-slate">
+              {canCreate
+                ? "Be the first to put something on the calendar — a dinner, a run, a room. Members will see it here."
+                : "The founding circle is just getting going. The first gatherings will appear here soon."}
+            </p>
+            {canCreate && events.length === 0 && (
+              <Button size="sm" onClick={() => setDialogOpen(true)} className="mt-1">
+                <Plus className="h-4 w-4" />
+                Create the first event
+              </Button>
+            )}
+          </div>
         )}
       </div>
+
+      {canCreate && (
+        <CreateEventDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          onCreated={(event) => {
+            setEvents((prev) => [...prev, event]);
+            setDialogOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
