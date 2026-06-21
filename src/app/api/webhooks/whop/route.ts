@@ -5,21 +5,27 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type WhopWebhookEvent = ReturnType<typeof whopsdk.webhooks.unwrap>;
-type PaymentSucceeded = Extract<WhopWebhookEvent, { type: "payment.succeeded" }>;
+type MembershipActivated = Extract<
+  WhopWebhookEvent,
+  { type: "membership.activated" }
+>;
 
 /**
  * Whop webhook receiver. Validates the signature via the SDK (standardwebhooks)
- * and handles successful payments. See docs.whop.com/developer/guides/webhooks.
+ * and handles new members. See docs.whop.com/developer/guides/webhooks.
  *
  * Whop natively grants paying members access to the community experiences
  * (chat, forums, events, announcements), so no provisioning is needed here.
  * We log new members for visibility; hook in CRM / welcome flows downstream.
+ *
+ * Subscribed event: `membership.activated` (fires when a member's membership
+ * becomes active — i.e. they joined). Its payload includes the member's email.
  */
 export async function POST(request: NextRequest): Promise<Response> {
   const body = await request.text();
   const headers = Object.fromEntries(request.headers);
 
-  let event;
+  let event: WhopWebhookEvent;
   try {
     // Throws if the signature is missing/invalid → reject.
     event = whopsdk.webhooks.unwrap(body, { headers });
@@ -28,38 +34,22 @@ export async function POST(request: NextRequest): Promise<Response> {
     return new Response("Invalid signature", { status: 400 });
   }
 
-  if (event.type === "payment.succeeded") {
-    await handlePaymentSucceeded(event.data);
+  if (event.type === "membership.activated") {
+    handleNewMember(event.data);
   }
 
   return new Response("OK", { status: 200 });
 }
 
-async function handlePaymentSucceeded(payment: PaymentSucceeded["data"]) {
-  const userId = payment.user?.id ?? null;
-  let name = payment.user?.name ?? payment.user?.username ?? null;
-  const memberId = payment.member?.id ?? null;
-
-  // The payment payload doesn't include email — enrich from the member record
-  // (requires the `member:email:read` permission on the API key).
-  let email: string | null = null;
-  if (memberId) {
-    try {
-      const member = await whopsdk.members.retrieve(memberId);
-      email = member.user?.email ?? null;
-      name = name ?? member.user?.name ?? null;
-    } catch (err) {
-      console.error("[whop] failed to enrich member details", err);
-    }
-  }
-
-  console.log("[whop] payment.succeeded — new member", {
-    name,
-    email,
-    userId,
-    memberId,
-    planId: payment.plan?.id ?? null,
-    productId: payment.product?.id ?? null,
-    paymentId: payment.id,
+function handleNewMember(membership: MembershipActivated["data"]) {
+  // TODO: trigger CRM sync / welcome flow here.
+  console.log("[whop] membership.activated — new member", {
+    name: membership.user?.name ?? membership.user?.username ?? null,
+    email: membership.user?.email ?? null,
+    userId: membership.user?.id ?? null,
+    memberId: membership.member?.id ?? null,
+    planId: membership.plan?.id ?? null,
+    productId: membership.product?.id ?? null,
+    membershipId: membership.id,
   });
 }
