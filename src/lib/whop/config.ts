@@ -67,27 +67,3 @@ export const chatRooms: ChatRoom[] = [
 export const defaultRoomSlug = "general";
 export const chatRoomBySlug = (slug: string): ChatRoom | undefined =>
   chatRooms.find((r) => r.slug === slug);
-
-/** Pricing surfaced on the marketing site — must match the Whop plans above. */
-export const plans = [
-  {
-    key: "annual" as const,
-    name: "Annual",
-    planId: whop.plans.annual,
-    price: "$400",
-    interval: "/year",
-    note: "Best value — two months free",
-    featured: true,
-  },
-  {
-    key: "monthly" as const,
-    name: "Monthly",
-    planId: whop.plans.monthly,
-    price: "$49",
-    interval: "/month",
-    note: "Flexible, cancel anytime",
-    featured: false,
-  },
-];
-
-export type PlanKey = (typeof plans)[number]["key"];

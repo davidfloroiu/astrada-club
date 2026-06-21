@@ -4,7 +4,6 @@ import { ArrowLeft, MapPin, Hammer, Sparkles } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { LevelBadge } from "@/components/ui/LevelBadge";
 import { members } from "@/lib/data";
 
 export async function generateMetadata({
@@ -60,7 +59,6 @@ export default async function MemberProfilePage({
                 <MapPin className="h-[18px] w-[18px]" />
                 {member.city}, {member.country}
               </span>
-              <LevelBadge level={member.level} />
             </div>
           </div>
 
@@ -132,12 +130,6 @@ export default async function MemberProfilePage({
             <div className="flex items-center justify-between gap-4 py-3">
               <dt className="text-sm text-muted">Member since</dt>
               <dd className="text-sm text-ink">{member.joinedYear}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 py-3">
-              <dt className="text-sm text-muted">Standing</dt>
-              <dd>
-                <LevelBadge level={member.level} />
-              </dd>
             </div>
           </dl>
 

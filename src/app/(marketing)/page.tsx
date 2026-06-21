@@ -2,7 +2,6 @@ import { Hero } from "@/components/marketing/sections/Hero";
 import { Manifesto } from "@/components/marketing/sections/Manifesto";
 import { Benefits } from "@/components/marketing/sections/Benefits";
 import { WhoItsFor } from "@/components/marketing/sections/WhoItsFor";
-import { Levels } from "@/components/marketing/sections/Levels";
 import { FoundersLetter } from "@/components/marketing/sections/FoundersLetter";
 import { Membership } from "@/components/marketing/sections/Membership";
 import { Faq } from "@/components/marketing/sections/Faq";
@@ -15,7 +14,6 @@ export default function HomePage() {
       <Manifesto />
       <Benefits />
       <WhoItsFor />
-      <Levels />
       <FoundersLetter />
       <Membership />
       <Faq />

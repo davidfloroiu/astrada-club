@@ -22,7 +22,7 @@ export default function TermsPage() {
 
       <h2>Billing &amp; renewals</h2>
       <ul>
-        <li>Membership is <strong>$49 per month</strong> or <strong>$400 per year</strong>.</li>
+        <li>Astrada is a paid membership. Pricing is shared with applicants upon acceptance and confirmed at checkout before any charge.</li>
         <li>Billing and renewals are handled by <strong>Whop</strong>. Your plan renews automatically until you cancel.</li>
         <li>You can cancel anytime through Whop; cancellation stops future renewals and takes effect at the end of your current period.</li>
         <li>Except where required by law, payments are non-refundable.</li>

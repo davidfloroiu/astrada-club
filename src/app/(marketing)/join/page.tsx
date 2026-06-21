@@ -42,9 +42,8 @@ export default async function JoinPage({
             )}
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Badge tone="azure">$49 / month</Badge>
-              <Badge tone="azure">$400 / year</Badge>
-              <Badge tone="neutral">Cancel anytime</Badge>
+              <Badge tone="azure">Application-only</Badge>
+              <Badge tone="neutral">Reviewed by the founders</Badge>
             </div>
 
             <div className="silver-divider my-8 w-24" />

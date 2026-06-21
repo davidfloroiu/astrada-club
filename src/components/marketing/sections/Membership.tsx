@@ -28,11 +28,8 @@ export function Membership() {
             Apply for membership
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-slate">
-            Astrada is application-only. Membership is{" "}
-            <span className="font-medium text-ink">$49/month</span> or{" "}
-            <span className="font-medium text-ink">$400/year</span> — but first,
-            tell us about you. We read every application and invite the founders
-            who fit.
+            Astrada is application-only. Tell us about you and what you&rsquo;re
+            building — we read every application and invite the founders who fit.
           </p>
         </Reveal>
 

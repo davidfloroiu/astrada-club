@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
-import { LevelBadge } from "@/components/ui/LevelBadge";
 import { cn } from "@/lib/utils";
 import type { Member } from "@/lib/types";
 
@@ -37,12 +36,11 @@ export function MemberCard({
         {member.building}
       </p>
 
-      <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+      <div className="mt-auto flex items-center gap-3 pt-5">
         <span className="inline-flex items-center gap-1.5 text-xs text-muted">
           <MapPin className="h-3.5 w-3.5" />
           {member.city}
         </span>
-        <LevelBadge level={member.level} />
       </div>
     </article>
   );

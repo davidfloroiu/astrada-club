@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import { getSession, toSessionUser } from "@/lib/whop/session";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 
 const hanken = Hanken_Grotesk({
   variable: "--font-hanken",
@@ -40,6 +41,19 @@ export const metadata: Metadata = {
     siteName: "Astrada",
     type: "website",
   },
+  applicationName: "Astrada",
+  appleWebApp: {
+    capable: true,
+    title: "Astrada",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/apple-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#edebe5",
 };
 
 export default async function RootLayout({
@@ -58,6 +72,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full bg-canvas text-ink">
         <AuthProvider initialUser={user}>{children}</AuthProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

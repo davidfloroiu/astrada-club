@@ -1,5 +1,3 @@
-export type MemberLevel = 1 | 2 | 3 | 4 | 5;
-
 export interface Member {
   id: string;
   name: string;
@@ -7,7 +5,6 @@ export interface Member {
   company: string;
   city: string;
   country: string;
-  level: MemberLevel;
   industry: string;
   bio: string;
   building: string; // one-line "what they're building now"
@@ -51,12 +48,6 @@ export interface Benefit {
   icon: string; // lucide icon name
   title: string;
   description: string;
-}
-
-export interface LevelDef {
-  level: MemberLevel;
-  name: string;
-  requirement: string;
 }
 
 export interface Archetype {

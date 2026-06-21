@@ -5,19 +5,10 @@ import { Search } from "lucide-react";
 import { MemberCard } from "@/components/members/MemberCard";
 import { Button } from "@/components/ui/Button";
 import { members } from "@/lib/data";
-import { cn } from "@/lib/utils";
-
-const LEVEL_FILTERS: { label: string; value: number }[] = [
-  { label: "All", value: 0 },
-  { label: "L2+", value: 2 },
-  { label: "L3+", value: 3 },
-  { label: "L4+", value: 4 },
-];
 
 export function MembersDirectory() {
   const [query, setQuery] = useState("");
   const [industry, setIndustry] = useState<string>("All");
-  const [level, setLevel] = useState<number>(0);
 
   const industries = useMemo(
     () => ["All", ...Array.from(new Set(members.map((m) => m.industry))).sort()],
@@ -33,15 +24,13 @@ export function MembersDirectory() {
         m.company.toLowerCase().includes(q) ||
         m.city.toLowerCase().includes(q);
       const matchesIndustry = industry === "All" || m.industry === industry;
-      const matchesLevel = level === 0 || m.level >= level;
-      return matchesQuery && matchesIndustry && matchesLevel;
+      return matchesQuery && matchesIndustry;
     });
-  }, [query, industry, level]);
+  }, [query, industry]);
 
   const resetFilters = () => {
     setQuery("");
     setIndustry("All");
-    setLevel(0);
   };
 
   if (members.length === 0) {
@@ -85,26 +74,6 @@ export function MembersDirectory() {
             </option>
           ))}
         </select>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {LEVEL_FILTERS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setLevel(opt.value)}
-              className={cn(
-                "rounded-full border px-4 py-2 text-sm transition-colors focus-ring",
-                level === opt.value
-                  ? "border-azure/40 bg-azure/10 text-azure-deep"
-                  : "border-line text-slate hover:text-navy",
-              )}
-              aria-pressed={level === opt.value}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-
       </div>
 
       <p className="mb-4 text-sm text-muted">

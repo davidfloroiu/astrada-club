@@ -40,7 +40,7 @@ export function Footer() {
             <Logo />
             <p className="mt-4 text-sm leading-relaxed text-slate">
               A private community for founders, being built from the ground up.
-              Membership runs on Whop — $49/mo or $400/yr.
+              Membership is by application.
             </p>
             <div className="silver-divider mt-6 w-24" />
             <p className="mt-4 text-xs text-muted">Forming the founding circle now.</p>

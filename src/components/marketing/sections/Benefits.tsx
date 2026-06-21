@@ -4,7 +4,6 @@ import {
   MessagesSquare,
   Handshake,
   Tags,
-  Compass,
   type LucideIcon,
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -18,7 +17,6 @@ const icons: Record<string, LucideIcon> = {
   MessagesSquare,
   Handshake,
   Tags,
-  Compass,
 };
 
 export function Benefits() {

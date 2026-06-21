@@ -4,7 +4,6 @@ import type {
   Perk,
   FaqItem,
   Benefit,
-  LevelDef,
   Archetype,
 } from "./types";
 
@@ -47,12 +46,6 @@ export const benefits: Benefit[] = [
     description:
       "Perks on the tools founders actually use. We're lining these up now and will only ever list partnerships once they're real.",
   },
-  {
-    icon: "Compass",
-    title: "Earned Standing",
-    description:
-      "Reputation you can't fake. Members earn standing through documented outcomes, so an Astrada introduction always means something.",
-  },
 ];
 
 /* ── Who Astrada is for (archetypes, not real people) ───────── */
@@ -75,15 +68,6 @@ export const archetypes: Archetype[] = [
     description:
       "You've built before — maybe sold, maybe not — and you're doing it again with scar tissue and conviction.",
   },
-];
-
-/* ── Membership levels (earned, not bought) ─────────────────── */
-export const levels: LevelDef[] = [
-  { level: 1, name: "Founder", requirement: "A member with a live, revenue-generating company." },
-  { level: 2, name: "Operator", requirement: "Meaningful revenue, or a priced funding round." },
-  { level: 3, name: "Builder", requirement: "Significant scale — revenue, a notable exit, or a real team." },
-  { level: 4, name: "Architect", requirement: "Category-defining traction or a significant exit." },
-  { level: 5, name: "Luminary", requirement: "Generational outcomes. By member nomination only." },
 ];
 
 /* ── Sample members (illustrative — labeled as such in the app) ─ */
@@ -180,15 +164,11 @@ export const faqs: FaqItem[] = [
   },
   {
     q: "How do I join?",
-    a: "Join directly through Whop — pick monthly or annual, check out securely (right here on the site), and you're in. Then sign in with Whop to enter the members' area.",
+    a: "Astrada is application-only. Submit the application — tell us about you and what you're building — and we read every one. Approved founders receive an invitation to join, then sign in to enter the members' area.",
   },
   {
-    q: "What does membership cost?",
-    a: "$49 per month, or $400 per year — annual saves you two months. Membership runs on Whop and you can cancel anytime.",
-  },
-  {
-    q: "What are member levels?",
-    a: "Levels are earned, not bought. Every member starts as a Founder and progresses through documented outcomes — revenue, funding, exits. There's no faking your way up, which is what gives an Astrada introduction its weight.",
+    q: "Is there a membership fee?",
+    a: "Yes — Astrada is a paid community. We share the details with founders once their application is accepted, so the conversation starts with fit, not cost.",
   },
   {
     q: "Why join now instead of waiting?",

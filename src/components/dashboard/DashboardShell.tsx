@@ -21,6 +21,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 const nav = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
@@ -164,6 +165,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </div>
+
+      <InstallPrompt />
     </div>
   );
 }
