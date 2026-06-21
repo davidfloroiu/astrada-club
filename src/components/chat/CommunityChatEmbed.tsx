@@ -6,7 +6,6 @@ import {
   Elements,
 } from "@whop/embedded-components-react-js";
 import { loadWhopElements } from "@whop/embedded-components-vanilla-js";
-import { whop } from "@/lib/whop/config";
 
 // Load the Whop elements runtime once on the client. This module is only ever
 // imported in the browser (its parent uses next/dynamic with ssr: false).
@@ -39,7 +38,11 @@ function ChatFallback() {
  * The live Astrada community chat, embedded from Whop. Real-time and in sync
  * with whop.com — same channel, same messages.
  */
-export default function CommunityChatEmbed() {
+export default function CommunityChatEmbed({
+  channelId,
+}: {
+  channelId: string;
+}) {
   return (
     <div
       className="overflow-hidden rounded-2xl border border-line bg-paper shadow-[var(--shadow-card)]"
@@ -47,8 +50,11 @@ export default function CommunityChatEmbed() {
     >
       <Elements elements={elements}>
         <ChatSession token={fetchChatToken}>
+          {/* key forces a clean remount when switching rooms; the Elements +
+              ChatSession (and its token) stay mounted above. */}
           <ChatElement
-            options={{ channelId: whop.chatChannelId }}
+            key={channelId}
+            options={{ channelId }}
             style={{ height: "100%", width: "100%" }}
             fallback={<ChatFallback />}
           />

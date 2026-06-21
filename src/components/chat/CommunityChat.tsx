@@ -24,6 +24,6 @@ const CommunityChatEmbed = dynamic(
   },
 );
 
-export function CommunityChat() {
-  return <CommunityChatEmbed />;
+export function CommunityChat({ channelId }: { channelId: string }) {
+  return <CommunityChatEmbed channelId={channelId} />;
 }

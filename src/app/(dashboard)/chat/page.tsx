@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Badge } from "@/components/ui/Badge";
-import { CommunityChat } from "@/components/chat/CommunityChat";
+import { ChatRoomShell } from "@/components/chat/ChatRoomShell";
 
 export const metadata = { title: "Community" };
 
@@ -9,7 +9,7 @@ export default function ChatPage() {
     <>
       <PageHeader
         title="Community"
-        subtitle="The live Astrada chat — in sync with whop.com. Same channel, same people, in real time."
+        subtitle="Live chat in sync with whop.com. Jump into the room for your industry — or hang out in General."
         action={
           <Badge tone="positive">
             <span className="h-1.5 w-1.5 rounded-full bg-positive" />
@@ -17,7 +17,7 @@ export default function ChatPage() {
           </Badge>
         }
       />
-      <CommunityChat />
+      <ChatRoomShell />
     </>
   );
 }
