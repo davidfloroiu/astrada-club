@@ -8,7 +8,7 @@ export default function MembersPage() {
     <>
       <PageHeader
         title="Members"
-        subtitle="Sample profiles, shown to illustrate the directory as the founding circle forms. The real directory grows as members join."
+        subtitle="The member directory fills in as the founding circle joins."
       />
       <MembersDirectory />
     </>

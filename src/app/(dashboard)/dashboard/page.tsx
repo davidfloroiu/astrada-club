@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   Calendar,
   Gift,
-  MapPin,
   Sparkles,
   MessagesSquare,
   BadgeCheck,
@@ -13,10 +12,8 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { MemberCard } from "@/components/members/MemberCard";
 import { useAuth } from "@/lib/auth";
-import { events, members, perks } from "@/lib/data";
-import { formatDate } from "@/lib/utils";
+import { events, perks } from "@/lib/data";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -29,11 +26,6 @@ export default function DashboardPage() {
     day: "numeric",
   });
 
-  const upcoming = [...events]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 3);
-
-  const featuredMembers = members.slice(0, 3);
   const featuredPerks = perks.slice(0, 3);
 
   return (
@@ -101,7 +93,10 @@ export default function DashboardPage() {
           <p className="mt-1 text-xs text-muted">Founding member</p>
         </div>
 
-        <div className="card-surface p-5">
+        <Link
+          href="/events"
+          className="card-surface focus-ring block p-5 transition-colors hover:border-azure/30"
+        >
           <div className="flex items-start justify-between">
             <p className="text-xs uppercase tracking-wide text-faint">
               Upcoming events
@@ -113,8 +108,10 @@ export default function DashboardPage() {
           <p className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
             {events.length}
           </p>
-          <p className="mt-1 text-xs text-muted">sample</p>
-        </div>
+          <p className="mt-1 text-xs text-muted">
+            {events.length === 0 ? "None scheduled yet" : "On the calendar"}
+          </p>
+        </Link>
 
         <div className="card-surface p-5">
           <div className="flex items-start justify-between">
@@ -137,96 +134,11 @@ export default function DashboardPage() {
       <div className="flex items-start gap-3 rounded-xl border border-line bg-mist/60 px-4 py-3">
         <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-azure" />
         <p className="text-sm leading-relaxed text-slate">
-          The chat is live. The events, members, and perks below are sample
-          previews while the founding circle forms.
+          The chat is live. Events are added by founding members and the team —
+          and the perks below are samples we&rsquo;re lining up as the founding
+          circle forms.
         </p>
       </div>
-
-      {/* Upcoming events */}
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
-            Upcoming events
-          </h2>
-          <Link
-            href="/events"
-            className="focus-ring text-sm text-azure hover:text-azure-bright"
-          >
-            View all
-          </Link>
-        </div>
-
-        <div className="space-y-3">
-          {upcoming.map((event) => {
-            const d = new Date(event.date + "T00:00:00");
-            const day = d.getDate();
-            const month = d.toLocaleDateString("en-US", { month: "short" });
-            return (
-              <div
-                key={event.id}
-                className="card-surface flex flex-col gap-4 p-5 sm:flex-row sm:items-center"
-              >
-                <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl border border-line bg-mist">
-                  <span className="font-display text-2xl font-semibold leading-none tracking-tight text-ink">
-                    {day}
-                  </span>
-                  <span className="mt-1 text-[11px] uppercase tracking-wide text-faint">
-                    {month}
-                  </span>
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <h3 className="truncate font-display text-base font-semibold tracking-tight text-ink">
-                    {event.title}
-                  </h3>
-                  <p className="mt-1 flex items-center gap-1.5 truncate text-sm text-slate">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-faint" />
-                    {event.city} · {event.venue}
-                  </p>
-                  <p className="mt-1 text-xs text-faint">
-                    {formatDate(event.date)} · {event.time}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3 sm:flex-col sm:items-end">
-                  <Badge tone="positive">{event.spotsLeft} spots left</Badge>
-                  <Button size="sm" href="/events">
-                    RSVP
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Founders to meet */}
-      <section className="space-y-5">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
-              Founders to meet
-            </h2>
-            <p className="mt-1 text-xs text-muted">sample founding members</p>
-          </div>
-          <Link
-            href="/members"
-            className="focus-ring text-sm text-azure hover:text-azure-bright"
-          >
-            View directory
-          </Link>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredMembers.map((member) => (
-            <MemberCard
-              key={member.id}
-              member={member}
-              href={`/members/${member.id}`}
-            />
-          ))}
-        </div>
-      </section>
 
       {/* Perks we're lining up */}
       <section className="space-y-5">

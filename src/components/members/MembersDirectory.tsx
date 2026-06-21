@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Info, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { MemberCard } from "@/components/members/MemberCard";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { members } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -44,6 +43,20 @@ export function MembersDirectory() {
     setIndustry("All");
     setLevel(0);
   };
+
+  if (members.length === 0) {
+    return (
+      <div className="card-surface flex flex-col items-center gap-3 px-6 py-20 text-center">
+        <p className="font-display text-lg font-semibold tracking-tight text-ink">
+          The directory is just getting started
+        </p>
+        <p className="max-w-md text-sm leading-relaxed text-slate">
+          As founding members join, they&rsquo;ll appear here — with what
+          they&rsquo;re building and a way to ask for a warm introduction.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -92,10 +105,6 @@ export function MembersDirectory() {
           ))}
         </div>
 
-        <Badge tone="neutral" className="ml-auto">
-          <Info className="h-3.5 w-3.5" />
-          Preview · sample members
-        </Badge>
       </div>
 
       <p className="mb-4 text-sm text-muted">

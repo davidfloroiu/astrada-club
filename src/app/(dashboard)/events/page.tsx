@@ -11,7 +11,7 @@ export default function EventsPage() {
     <>
       <PageHeader
         title="Events"
-        subtitle="Early founding-circle gatherings. These are sample events that illustrate what membership looks like — real dates fill in as the circle forms."
+        subtitle="Founding-circle gatherings — dinners, runs, and rooms. Founding members and the team host them; new events appear here as they're posted."
       />
       <EventsBoard />
     </>
