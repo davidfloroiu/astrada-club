@@ -26,9 +26,8 @@ export function HashScroll() {
     };
 
     function handleClick(e: MouseEvent) {
-      // Respect modifier clicks (new tab/window) and already-handled events.
+      // Respect modifier clicks (open in new tab/window, etc.).
       if (
-        e.defaultPrevented ||
         e.button !== 0 ||
         e.metaKey ||
         e.ctrlKey ||
@@ -49,12 +48,17 @@ export function HashScroll() {
       // Only intercept when the target section is on the current page;
       // otherwise let the browser/router navigate there normally.
       if (scrollToId(match[1], "smooth")) {
+        // Stop here in the capture phase, before Next.js's <Link> delegated
+        // handler (attached at the app root) can preventDefault + perform a
+        // client-side navigation that would swallow the scroll.
         e.preventDefault();
+        e.stopPropagation();
         history.pushState(null, "", `#${match[1]}`);
       }
     }
 
-    document.addEventListener("click", handleClick);
+    // Capture phase: runs before React's root-level synthetic handlers.
+    document.addEventListener("click", handleClick, true);
 
     // Honor a hash on initial load once layout has settled.
     if (window.location.hash.length > 1) {
@@ -62,7 +66,7 @@ export function HashScroll() {
       requestAnimationFrame(() => scrollToId(id, "auto"));
     }
 
-    return () => document.removeEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick, true);
   }, []);
 
   return null;
