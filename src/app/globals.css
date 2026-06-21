@@ -71,7 +71,11 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  /* `clip` contains horizontal overflow WITHOUT turning <body> into a scroll
+     container. Using `hidden` here forces overflow-y to compute to `auto`,
+     which makes the body (not the document) scroll and silently breaks native
+     hash-fragment scrolling, `scroll-behavior: smooth`, and anchor nav links. */
+  overflow-x: clip;
 }
 
 ::selection {
