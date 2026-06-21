@@ -44,8 +44,14 @@ function Spinner({ label }: { label: string }) {
  * conversation on the right. One ChatSession (and its token) stays mounted; only
  * the thread's <ChatElement> remounts when you switch conversations.
  */
-export default function MessagesEmbed() {
-  const [channelId, setChannelId] = useState<string | null>(null);
+export default function MessagesEmbed({
+  initialChannelId,
+}: {
+  initialChannelId?: string | null;
+}) {
+  const [channelId, setChannelId] = useState<string | null>(
+    initialChannelId ?? null,
+  );
 
   return (
     <div

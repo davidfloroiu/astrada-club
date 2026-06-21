@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Mail, Users } from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { ConnectButton } from "@/components/network/ConnectButton";
+import { MessageButton } from "@/components/chat/MessageButton";
 import { IntroDialog } from "@/components/network/IntroDialog";
 import { getSession } from "@/lib/whop/session";
 import { memberMap } from "@/lib/members/directory";
@@ -70,13 +71,7 @@ export default async function MemberProfilePage({
           {!isSelf && (
             <div className="flex w-full flex-wrap gap-3 sm:w-auto sm:flex-col">
               <ConnectButton userId={member.userId} initialStatus={status} />
-              <Link
-                href="/messages"
-                className="focus-ring inline-flex items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist"
-              >
-                <Mail className="h-4 w-4" />
-                Message
-              </Link>
+              <MessageButton userId={member.userId} name={member.name} />
             </div>
           )}
         </div>

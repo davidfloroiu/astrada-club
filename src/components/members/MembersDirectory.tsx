@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { ConnectButton } from "@/components/network/ConnectButton";
+import { MessageButton } from "@/components/chat/MessageButton";
 import type { DirectoryMember } from "@/lib/members/directory";
 import type { ConnectionStatus } from "@/lib/network/store";
 
@@ -84,14 +85,17 @@ export function MembersDirectory({ members }: { members: DirectoryEntry[] }) {
               </div>
             </Link>
 
-            <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+            <div className="mt-auto flex items-center justify-between gap-2 pt-5">
               <Link
                 href={`/members/${m.userId}`}
                 className="text-xs text-muted transition-colors hover:text-navy"
               >
                 View profile
               </Link>
-              <ConnectButton userId={m.userId} initialStatus={m.status} />
+              <div className="flex items-center gap-2">
+                <MessageButton userId={m.userId} name={m.name} variant="icon" />
+                <ConnectButton userId={m.userId} initialStatus={m.status} />
+              </div>
             </div>
           </article>
         ))}

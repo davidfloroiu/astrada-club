@@ -24,6 +24,10 @@ const MessagesEmbed = dynamic(
   },
 );
 
-export function Messages() {
-  return <MessagesEmbed />;
+export function Messages({
+  initialChannelId,
+}: {
+  initialChannelId?: string | null;
+}) {
+  return <MessagesEmbed initialChannelId={initialChannelId} />;
 }

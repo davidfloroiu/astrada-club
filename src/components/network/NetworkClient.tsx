@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, X, Mail, Handshake, UserCheck } from "lucide-react";
+import { Check, X, Handshake, UserCheck } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { MessageButton } from "@/components/chat/MessageButton";
 import type { DirectoryMember } from "@/lib/members/directory";
 
 interface Intro {
@@ -251,13 +252,7 @@ export function NetworkClient({
           <ul className="grid gap-3 sm:grid-cols-2">
             {connections.map((m) => (
               <Row key={m.userId} member={m}>
-                <Link
-                  href="/messages"
-                  aria-label={`Message ${m.name}`}
-                  className="focus-ring rounded-full border border-line p-2 text-slate hover:bg-mist hover:text-navy"
-                >
-                  <Mail className="h-4 w-4" />
-                </Link>
+                <MessageButton userId={m.userId} name={m.name} variant="icon" />
               </Row>
             ))}
           </ul>
