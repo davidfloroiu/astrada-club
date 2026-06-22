@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/whop/session";
 import { whopsdk } from "@/lib/whop/sdk";
 import { whop } from "@/lib/whop/config";
+import { getStatus } from "@/lib/network/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,6 +32,16 @@ export async function POST(request: NextRequest): Promise<Response> {
   const userId = (body.userId ?? "").trim();
   if (!userId || userId === session.userId) {
     return NextResponse.json({ error: "Invalid member." }, { status: 422 });
+  }
+
+  // 1:1 DMs are network-gated: you can only message members you're connected
+  // with. (Group chats are not gated.) Non-connections must connect first.
+  const status = await getStatus(session.userId, userId);
+  if (status !== "connected") {
+    return NextResponse.json(
+      { error: "Connect with this member first to message them.", needsConnection: true },
+      { status: 403 },
+    );
   }
 
   try {

@@ -6,6 +6,8 @@ import {
   Elements,
 } from "@whop/embedded-components-react-js";
 import { loadWhopElements } from "@whop/embedded-components-vanilla-js";
+import { useTheme } from "@/lib/theme";
+import { whopAppearance } from "@/lib/whop/appearance";
 
 // Load the Whop elements runtime once on the client. This module is only ever
 // imported in the browser (its parent uses next/dynamic with ssr: false).
@@ -43,12 +45,13 @@ export default function CommunityChatEmbed({
 }: {
   channelId: string;
 }) {
+  const { resolved } = useTheme();
   return (
     <div
       className="overflow-hidden rounded-2xl border border-line bg-paper shadow-[var(--shadow-card)]"
       style={{ height: "76vh", minHeight: 520 }}
     >
-      <Elements elements={elements}>
+      <Elements elements={elements} appearance={whopAppearance(resolved)}>
         <ChatSession token={fetchChatToken}>
           {/* key forces a clean remount when switching rooms; the Elements +
               ChatSession (and its token) stay mounted above. */}

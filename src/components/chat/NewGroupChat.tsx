@@ -99,7 +99,7 @@ export function NewGroupChat() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="focus-ring inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-navy-600"
+        className="focus-ring inline-flex items-center gap-2 rounded-full border border-line-strong bg-paper px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist"
       >
         <Users className="h-4 w-4" />
         New group

@@ -10,6 +10,8 @@ import {
 } from "@whop/embedded-components-react-js";
 import { loadWhopElements } from "@whop/embedded-components-vanilla-js";
 import { whop } from "@/lib/whop/config";
+import { useTheme } from "@/lib/theme";
+import { whopAppearance } from "@/lib/whop/appearance";
 
 // Load the Whop elements runtime once on the client. This module is only ever
 // imported in the browser (its parent uses next/dynamic with ssr: false).
@@ -52,13 +54,14 @@ export default function MessagesEmbed({
   const [channelId, setChannelId] = useState<string | null>(
     initialChannelId ?? null,
   );
+  const { resolved } = useTheme();
 
   return (
     <div
       className="grid grid-cols-1 overflow-hidden rounded-2xl border border-line bg-paper shadow-[var(--shadow-card)] lg:grid-cols-[320px_minmax(0,1fr)]"
       style={{ height: "76vh", minHeight: 520 }}
     >
-      <Elements elements={elements}>
+      <Elements elements={elements} appearance={whopAppearance(resolved)}>
         <ChatSession token={fetchDmToken}>
           {/* Inbox */}
           <div className="min-h-0 border-b border-line lg:border-b-0 lg:border-r">

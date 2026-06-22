@@ -71,7 +71,10 @@ export default async function MemberProfilePage({
           {!isSelf && (
             <div className="flex w-full flex-wrap gap-3 sm:w-auto sm:flex-col">
               <ConnectButton userId={member.userId} initialStatus={status} />
-              <MessageButton userId={member.userId} name={member.name} />
+              {/* Messaging is network-gated — only once you're connected. */}
+              {status === "connected" && (
+                <MessageButton userId={member.userId} name={member.name} />
+              )}
             </div>
           )}
         </div>
