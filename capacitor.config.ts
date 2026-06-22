@@ -34,7 +34,13 @@ const config: CapacitorConfig = {
     ],
   },
   ios: {
-    contentInset: "always",
+    // "never" lets the WebView go truly edge-to-edge so the page background
+    // fills the status-bar and home-indicator safe areas. The app owns its own
+    // safe-area spacing in CSS via env(safe-area-inset-*) (paired with
+    // viewport-fit=cover). "always" made WKWebView reserve the bottom inset and
+    // exposed the native scroll-view background (a beige band) under the home
+    // indicator.
+    contentInset: "never",
     backgroundColor: "#edebe5",
     // Let the WebView's own pull-to-refresh / scroll feel native.
     scrollEnabled: true,
