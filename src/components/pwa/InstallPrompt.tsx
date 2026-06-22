@@ -27,6 +27,8 @@ export function InstallPrompt() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Never show inside the native app — it's already "installed".
+    if (window.navigator.userAgent.includes("AstradaApp")) return;
 
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
