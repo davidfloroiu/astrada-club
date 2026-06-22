@@ -9,7 +9,11 @@ import { MessageButton } from "@/components/chat/MessageButton";
 import type { DirectoryMember } from "@/lib/members/directory";
 import type { ConnectionStatus } from "@/lib/network/store";
 
-export type DirectoryEntry = DirectoryMember & { status: ConnectionStatus };
+export type DirectoryEntry = DirectoryMember & {
+  status: ConnectionStatus;
+  industry?: string;
+  location?: string;
+};
 
 /**
  * The member directory — real members from Whop, each with a connect control.
@@ -76,6 +80,11 @@ export function MembersDirectory({ members }: { members: DirectoryEntry[] }) {
                 </h3>
                 {m.username && (
                   <p className="truncate text-sm text-slate">@{m.username}</p>
+                )}
+                {(m.industry || m.location) && (
+                  <p className="mt-1 truncate text-xs text-muted">
+                    {[m.industry, m.location].filter(Boolean).join(" · ")}
+                  </p>
                 )}
                 {m.isAdmin && (
                   <span className="mt-1 inline-block rounded-full bg-azure/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-azure-deep">

@@ -5,9 +5,11 @@ import { Avatar } from "@/components/ui/Avatar";
 import { ConnectButton } from "@/components/network/ConnectButton";
 import { MessageButton } from "@/components/chat/MessageButton";
 import { IntroDialog } from "@/components/network/IntroDialog";
+import { ProfileDetails } from "@/components/profile/ProfileDetails";
 import { getSession } from "@/lib/whop/session";
 import { memberMap } from "@/lib/members/directory";
 import { getStatus, mutualIds } from "@/lib/network/store";
+import { getProfile } from "@/lib/profile/store";
 
 export const dynamic = "force-dynamic";
 
@@ -35,9 +37,10 @@ export default async function MemberProfilePage({
   if (!member) notFound();
 
   const isSelf = member.userId === session.userId;
-  const [status, mutualIdList] = await Promise.all([
+  const [status, mutualIdList, profile] = await Promise.all([
     isSelf ? Promise.resolve("none" as const) : getStatus(session.userId, id),
     isSelf ? Promise.resolve([] as string[]) : mutualIds(session.userId, id),
+    getProfile(id),
   ]);
   const mutuals = mutualIdList
     .map((mid) => map.get(mid))
@@ -79,6 +82,8 @@ export default async function MemberProfilePage({
           )}
         </div>
       </div>
+
+      <ProfileDetails profile={profile} />
 
       {!isSelf && (
         <div className="card-surface mt-6 p-6">

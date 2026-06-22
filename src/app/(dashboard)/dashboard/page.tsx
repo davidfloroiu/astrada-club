@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { NotificationsToggle } from "@/components/pwa/NotificationsToggle";
+import { ProfilePrompt } from "@/components/dashboard/ProfilePrompt";
 import { useAuth } from "@/lib/auth";
 import { perks } from "@/lib/data";
 import { formatDate } from "@/lib/utils";
@@ -67,6 +68,8 @@ export default function DashboardPage() {
           perks taking shape as the founding circle comes together.
         </p>
       </header>
+
+      <ProfilePrompt />
 
       {/* Live community spotlight — the real Whop chat */}
       <section className="section-navy overflow-hidden rounded-2xl p-7 sm:p-9">

@@ -51,6 +51,21 @@ export default function ProfilePage() {
         </div>
       </header>
 
+      <Link
+        href="/profile/edit"
+        className="focus-ring flex items-center justify-between gap-4 rounded-2xl border border-line bg-paper px-4 py-3.5 transition-colors hover:bg-mist/60"
+      >
+        <span className="min-w-0">
+          <span className="block text-sm font-medium text-ink">
+            Edit your profile
+          </span>
+          <span className="block text-xs text-muted">
+            Industry, what you&rsquo;re building, who you want to meet
+          </span>
+        </span>
+        <ChevronRight className="h-4 w-4 shrink-0 text-faint" />
+      </Link>
+
       <NotificationsToggle />
 
       <section className="space-y-3">
