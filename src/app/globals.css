@@ -208,6 +208,143 @@ body {
   will-change: opacity, transform;
 }
 
+/* ── Native app: Liquid Glass bottom tab bar ───────────────────
+   A warm-tinted translucent glass capsule with a sliding "liquid lens"
+   behind the active tab. Used only inside the native shell (MobileTabBar). */
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  padding: 0 13px calc(env(safe-area-inset-bottom, 0px) + 10px);
+  pointer-events: none;
+}
+.tabbar-capsule {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 460px;
+  height: 64px;
+  padding: 6px;
+  border-radius: 28px;
+  overflow: hidden;
+  /* warm glass — paper mixed into the lower stop so it belongs to the palette */
+  background: linear-gradient(
+    180deg,
+    rgba(251, 250, 246, 0.7),
+    rgba(237, 235, 229, 0.78)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 10px 30px -10px rgba(14, 27, 48, 0.32),
+    0 3px 10px -6px rgba(14, 27, 48, 0.2),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(2);
+  -webkit-backdrop-filter: blur(20px) saturate(2);
+}
+/* hairline top edge — brightest at the apex, fading toward the rounded ends */
+.tabbar-capsule::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.95) 50%,
+    transparent
+  );
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tabbar-capsule {
+    background: rgba(251, 250, 246, 0.95);
+  }
+}
+
+/* the sliding refractive lens behind the active tab */
+.tabbar-lens {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc((100% - 12px) / 5);
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.16)
+  );
+  box-shadow:
+    0 6px 14px -6px rgba(14, 27, 48, 0.34),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.95),
+    inset 0 -7px 10px -9px rgba(14, 27, 48, 0.28);
+  backdrop-filter: blur(10px) saturate(1.7) brightness(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.7) brightness(1.15);
+  transition: transform 0.44s cubic-bezier(0.34, 1.2, 0.4, 1);
+  will-change: transform;
+}
+/* faint chromatic edge — cool top-left, warm bottom-right (dispersive glass) */
+.tabbar-lens::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(150, 180, 230, 0.5),
+    transparent 42%,
+    transparent 58%,
+    rgba(255, 244, 228, 0.5)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.tabbar-tab {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  color: rgba(14, 27, 48, 0.6);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.3s ease;
+}
+.tabbar-tab > svg {
+  height: 22px;
+  width: 22px;
+  transition: transform 0.34s cubic-bezier(0.34, 1.2, 0.4, 1);
+}
+.tabbar-tab[data-active="true"] {
+  color: var(--color-navy);
+}
+.tabbar-tab[data-active="true"] > svg {
+  transform: translateY(-2px);
+}
+.tabbar-tab-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+.tabbar-tab:focus-visible {
+  outline: none;
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 2px rgba(14, 27, 48, 0.4);
+}
+
 /* Reveal-on-scroll */
 .reveal {
   opacity: 0;

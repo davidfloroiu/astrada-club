@@ -17,18 +17,20 @@ export default async function DashboardLayout({
   // Not signed in → Whop OAuth.
   if (!session.userId) redirect("/login");
 
+  const native = await isNativeApp();
+
   // Signed in but no active membership. On the web → join page. In the native
   // app we can't surface a join/purchase path, and /join would bounce back here
   // via the proxy, so show a terminal notice instead.
   if (!session.hasAccess) {
-    if (await isNativeApp()) return <InactiveMembership />;
+    if (native) return <InactiveMembership />;
     redirect("/join?reason=no-access");
   }
 
   return (
     <>
       <NativePushRegistrar />
-      <DashboardShell>{children}</DashboardShell>
+      <DashboardShell native={native}>{children}</DashboardShell>
     </>
   );
 }

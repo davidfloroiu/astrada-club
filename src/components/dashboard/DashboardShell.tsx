@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
 
 const nav = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
@@ -116,12 +117,36 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({
+  children,
+  native = false,
+}: {
+  children: React.ReactNode;
+  native?: boolean;
+}) {
   const { user } = useAuth();
   const [drawer, setDrawer] = useState(false);
 
   // The dashboard route group is gated server-side; this is a defensive guard.
   if (!user) return null;
+
+  // Native app: a slim brand bar up top and the Liquid Glass tab bar at the
+  // bottom — no sidebar, no hamburger.
+  if (native) {
+    return (
+      <div className="min-h-dvh bg-canvas">
+        <header className="sticky top-0 z-40 bg-canvas/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+          <div className="flex h-14 items-center px-5">
+            <Logo />
+          </div>
+        </header>
+        <main className="mx-auto max-w-2xl px-5 pb-[calc(env(safe-area-inset-bottom)+104px)] pt-6">
+          {children}
+        </main>
+        <MobileTabBar />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-canvas">
