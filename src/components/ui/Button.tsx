@@ -15,9 +15,11 @@ const variants: Record<Variant, string> = {
   secondary:
     "border border-line-strong bg-paper text-ink hover:border-navy/30 hover:bg-mist",
   ghost: "text-slate hover:text-navy hover:bg-mist",
-  // White fill — for use on navy sections
+  // White fill — for use on navy sections. The label is pinned to a literal
+  // navy (not `text-navy`) because the global `.dark .text-navy → ink` remap
+  // would otherwise turn it near-white on this always-white fill (invisible).
   light:
-    "bg-white text-navy shadow-[0_10px_24px_-12px_rgba(0,0,0,0.5)] hover:bg-platinum-bright",
+    "bg-white text-[#0e1b30] shadow-[0_10px_24px_-12px_rgba(0,0,0,0.5)] hover:bg-platinum-bright",
 };
 
 const sizes: Record<Size, string> = {
@@ -63,6 +65,8 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
     );
   }
 
+  // Strip the custom props so only valid button attributes spread onto <button>.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { variant: _v, size: _s, className: _c, children: _ch, ...rest } =
     props as ButtonAsButton;
   return (

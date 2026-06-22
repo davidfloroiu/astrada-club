@@ -68,7 +68,7 @@ export function CommentThread({
           className="w-full resize-y rounded-xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-faint transition-colors focus-ring hover:border-navy/20"
         />
         {error ? (
-          <p className="mt-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
+          <p className="mt-2 rounded-xl border border-danger-line bg-danger-soft px-4 py-2.5 text-sm text-danger">
             {error}
           </p>
         ) : null}

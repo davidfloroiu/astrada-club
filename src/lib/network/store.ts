@@ -189,11 +189,17 @@ export async function respond(
   if (!isDbConfigured()) throw new NetworkUnavailable("Database not configured");
   await ensureTables();
   if (accept) {
-    await sql.query(
+    const res = await sql.query(
       `UPDATE connections SET status='accepted', responded_at=now()
        WHERE requester_id=$1 AND addressee_id=$2 AND status='pending'`,
       [otherId, viewerId],
     );
+    // No pending row matched (already accepted, cancelled, or never existed) —
+    // return the real current status instead of a phantom "connected" (which
+    // would otherwise surface a bogus "connection accepted" push + UI state).
+    if ((res.rowCount ?? 0) === 0) {
+      return getStatus(viewerId, otherId);
+    }
     return "connected";
   }
   await sql.query(

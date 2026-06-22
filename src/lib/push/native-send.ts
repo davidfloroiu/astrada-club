@@ -124,22 +124,28 @@ async function sendFcm(
   const messaging = getMessaging(app);
   for (let i = 0; i < records.length; i += FCM_BATCH) {
     const slice = records.slice(i, i + FCM_BATCH);
-    const resp = await messaging.sendEachForMulticast({
-      tokens: slice.map((r) => r.token),
-      notification: { title: payload.title, body: payload.body },
-      data: payload.url ? { url: payload.url } : {},
-      android: {
-        collapseKey: payload.tag,
-        notification: { tag: payload.tag },
-      },
-    });
-    resp.responses.forEach((r, j) => {
-      if (!r.success) {
-        const code = r.error?.code ?? "";
-        if (FCM_DEAD.has(code)) dead.push(slice[j].token);
-        else console.error("[native-push] fcm send failed", code || r.error);
-      }
-    });
+    try {
+      const resp = await messaging.sendEachForMulticast({
+        tokens: slice.map((r) => r.token),
+        notification: { title: payload.title, body: payload.body },
+        data: payload.url ? { url: payload.url } : {},
+        android: {
+          collapseKey: payload.tag,
+          notification: { tag: payload.tag },
+        },
+      });
+      resp.responses.forEach((r, j) => {
+        if (!r.success) {
+          const code = r.error?.code ?? "";
+          if (FCM_DEAD.has(code)) dead.push(slice[j].token);
+          else console.error("[native-push] fcm send failed", code || r.error);
+        }
+      });
+    } catch (err) {
+      // One failing wave (auth/network/credential error) shouldn't abort the
+      // remaining batches — isolate it and keep delivering to later tokens.
+      console.error(`[native-push] fcm batch ${i / FCM_BATCH} failed`, err);
+    }
   }
 }
 

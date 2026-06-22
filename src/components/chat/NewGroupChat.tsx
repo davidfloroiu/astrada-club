@@ -98,7 +98,14 @@ export function NewGroupChat() {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          // Open fresh — clear any stale selection/name/query from a prior open.
+          setSelected(new Set());
+          setName("");
+          setQuery("");
+          setErr(null);
+          setOpen(true);
+        }}
         className="focus-ring inline-flex items-center gap-2 rounded-full border border-line-strong bg-paper px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist"
       >
         <Users className="h-4 w-4" />
@@ -198,7 +205,7 @@ export function NewGroupChat() {
                       className={cn(
                         "grid h-5 w-5 shrink-0 place-items-center rounded-full border transition-colors",
                         on
-                          ? "border-azure bg-azure text-white"
+                          ? "border-azure bg-azure text-canvas"
                           : "border-line-strong",
                       )}
                     >
@@ -211,7 +218,7 @@ export function NewGroupChat() {
 
             {/* Footer */}
             <div className="border-t border-line px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-              {err && <p className="mb-2 text-xs text-red-700">{err}</p>}
+              {err && <p className="mb-2 text-xs text-danger">{err}</p>}
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-muted">
                   {selected.size === 0

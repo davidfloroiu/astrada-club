@@ -179,7 +179,7 @@ export function ApplicationForm() {
       </div>
 
       {status === "error" && error ? (
-        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="mt-4 rounded-xl border border-danger-line bg-danger-soft px-4 py-3 text-sm text-danger">
           {error}
         </p>
       ) : null}

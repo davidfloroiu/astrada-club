@@ -46,7 +46,7 @@ export default function DashboardPage() {
     day: "numeric",
   });
 
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = new Date().toLocaleDateString("en-CA"); // local YYYY-MM-DD
   const upcoming = events
     .filter((e) => e.date >= todayIso)
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -201,7 +201,7 @@ export default function DashboardPage() {
                     <span className="font-display text-2xl font-semibold leading-none tracking-tight text-ink">
                       {day}
                     </span>
-                    <span className="mt-1 text-[11px] uppercase tracking-wide text-faint">
+                    <span className="mt-1 text-[11px] uppercase tracking-wide text-slate">
                       {month}
                     </span>
                   </div>

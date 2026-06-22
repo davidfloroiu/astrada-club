@@ -93,10 +93,25 @@ export async function listEvents(): Promise<ClubEvent[]> {
   }
 }
 
-/** Only events today or later. */
+/**
+ * "Today" in the club's timezone (YYYY-MM-DD). Using UTC here dropped an event
+ * happening tonight once UTC rolled past midnight for members in the Americas.
+ * Configurable via CLUB_TIMEZONE; falls back to UTC if the zone is invalid.
+ */
+function clubToday(): string {
+  const tz = process.env.CLUB_TIMEZONE || "America/Los_Angeles";
+  try {
+    // en-CA renders as YYYY-MM-DD, which matches the stored DATE format.
+    return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date());
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
+/** Only events today or later (relative to the club timezone). */
 export async function listUpcomingEvents(): Promise<ClubEvent[]> {
   const all = await listEvents();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = clubToday();
   return all.filter((e) => e.date >= today);
 }
 

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/whop/session";
 import { whopsdk } from "@/lib/whop/sdk";
 import { whop } from "@/lib/whop/config";
+import { listMembers } from "@/lib/members/directory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,6 +47,18 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json(
       { error: "Groups are capped at 50 members." },
       { status: 422 },
+    );
+  }
+
+  // Only club members can be pulled into a group — don't let arbitrary (or
+  // non-member) Whop user ids be force-added to a channel. The picker is fed by
+  // this same directory, so any legitimate selection passes.
+  const directory = await listMembers();
+  const memberIds = new Set(directory.map((m) => m.userId));
+  if (others.some((id) => !memberIds.has(id))) {
+    return NextResponse.json(
+      { error: "Everyone in a group must be a club member." },
+      { status: 403 },
     );
   }
 

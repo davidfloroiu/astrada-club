@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import type { ClubEvent, EventType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
@@ -113,7 +113,14 @@ function EventCard({
           onClick={() => onToggle(event.id)}
           className="w-full sm:w-auto"
         >
-          {reserved ? "Reserved ✓" : "RSVP"}
+          {reserved ? (
+            <>
+              <Check className="h-4 w-4" />
+              Reserved
+            </>
+          ) : (
+            "RSVP"
+          )}
         </Button>
       </div>
     </div>

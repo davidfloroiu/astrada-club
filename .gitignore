@@ -24,6 +24,13 @@
 .DS_Store
 *.pem
 
+# secrets — signing keys / App Store Connect API keys must never be committed.
+# (AuthKey_*.p8 now lives in the repo root for local signing convenience.)
+*.p8
+*.p12
+*.mobileprovision
+AuthKey_*.p8
+
 # debug
 npm-debug.log*
 yarn-debug.log*

@@ -11,7 +11,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/login?error=config", request.url));
   }
 
-  const returnTo = request.nextUrl.searchParams.get("returnTo") || "/dashboard";
+  const rawReturnTo = request.nextUrl.searchParams.get("returnTo") || "/dashboard";
+  // Only honor same-origin relative paths — blocks an open-redirect where a
+  // crafted ?returnTo=https://evil.com (or //evil.com) bounces a freshly
+  // authenticated member off-site for phishing.
+  const returnTo =
+    rawReturnTo.startsWith("/") && !rawReturnTo.startsWith("//")
+      ? rawReturnTo
+      : "/dashboard";
   const pkce = createPkce();
 
   const session = await getSession();

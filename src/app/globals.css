@@ -20,8 +20,8 @@
   /* Ink / text */
   --color-ink: #0e1b30;         /* primary text — Deep Navy */
   --color-slate: #46506a;       /* secondary text */
-  --color-muted: #6e7588;       /* tertiary text */
-  --color-faint: #9a9aa6;       /* faint labels */
+  --color-muted: #565f73;       /* tertiary text — darkened to clear WCAG AA (≥4.5:1) on paper/canvas/mist */
+  --color-faint: #5f6678;       /* faint labels — darkened so small uppercase labels & placeholders stay legible */
 
   /* Lines */
   --color-line: rgba(14, 27, 48, 0.10);
@@ -39,7 +39,17 @@
   --color-platinum-deep: #9aa1ad;
 
   /* Status */
-  --color-positive: #1f9d6b;
+  --color-positive: #157a52;    /* darkened so positive badge text + "Live" clear AA on the 10% tint */
+
+  /* Danger / destructive — tokenized so error banners follow the active theme */
+  --color-danger: #b42318;
+  --color-danger-soft: #fff1f0;
+  --color-danger-line: #f3c5c0;
+
+  /* Like / favourite accent (forum) */
+  --color-like: #e11d48;
+  --color-like-soft: #fff1f3;
+  --color-like-line: #f8cdd6;
 
   /* Type */
   --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
@@ -83,7 +93,7 @@
   --color-ink: #f2f5fa;
   --color-slate: #afb9cc;
   --color-muted: #828da4;
-  --color-faint: #606a82;
+  --color-faint: #8993a9;       /* lifted so small faint labels clear AA on the dark surfaces */
 
   /* Lines — light + translucent on dark */
   --color-line: rgba(255, 255, 255, 0.1);
@@ -96,6 +106,14 @@
   --color-azure-deep: #b9d3f7;
 
   --color-positive: #34c08a;
+
+  /* Danger / like — dark variants so error/like states darken with the theme */
+  --color-danger: #f9a8a0;
+  --color-danger-soft: #2a1414;
+  --color-danger-line: #5a2a26;
+  --color-like: #fb7185;
+  --color-like-soft: #2a151a;
+  --color-like-line: #4c2630;
 
   /* Shadows lean on darkness + a faint top light */
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -16px rgba(0, 0, 0, 0.7);
@@ -244,10 +262,11 @@ body {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0 0 1px var(--color-line);
 }
 
-/* Focus ring */
+/* Focus ring — driven by the azure token so it re-themes (brightens on dark);
+   a literal navy here was nearly invisible on the dark canvas (~1.4:1). */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-canvas), 0 0 0 4px rgba(39, 69, 110, 0.55);
+  box-shadow: 0 0 0 2px var(--color-canvas), 0 0 0 4px var(--color-azure);
 }
 
 /* Custom scrollbar */
@@ -412,7 +431,7 @@ body {
   justify-content: center;
   gap: 2px;
   min-width: 0;
-  color: rgba(14, 27, 48, 0.6);
+  color: rgba(14, 27, 48, 0.72); /* raised from 0.6 so the 10px inactive labels clear AA */
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
   transition: color 0.3s ease;

@@ -39,7 +39,15 @@ export async function GET(request: NextRequest) {
     session.oauth = undefined;
     await session.save();
 
-    const dest = hasAccess ? pending.returnTo || "/dashboard" : "/join?reason=no-access";
+    // Defensive re-check: only redirect to a same-origin relative path even if
+    // the stored returnTo was somehow tampered with (open-redirect guard).
+    const safeReturnTo =
+      pending.returnTo &&
+      pending.returnTo.startsWith("/") &&
+      !pending.returnTo.startsWith("//")
+        ? pending.returnTo
+        : "/dashboard";
+    const dest = hasAccess ? safeReturnTo : "/join?reason=no-access";
     return NextResponse.redirect(new URL(dest, request.url));
   } catch (err) {
     console.error("[whop] OAuth callback failed", err);

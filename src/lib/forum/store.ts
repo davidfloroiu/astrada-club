@@ -264,27 +264,27 @@ export async function toggleLike(
   if (!isDbConfigured()) throw new ForumUnavailable("Database not configured");
   await ensureTables();
 
-  const existing = await sql.query(
-    `SELECT 1 FROM forum_likes WHERE post_id = $1 AND user_id = $2`,
+  // Atomic toggle: try to INSERT. If a row was actually inserted, the user just
+  // liked it; otherwise they had already liked it, so DELETE (unlike). Deriving
+  // `liked` from what the mutation actually did — not a stale pre-read — avoids
+  // the check-then-act race where two concurrent toggles disagree with the count.
+  const inserted = await sql.query(
+    `INSERT INTO forum_likes (post_id, user_id) VALUES ($1, $2)
+     ON CONFLICT (post_id, user_id) DO NOTHING
+     RETURNING 1`,
     [postId, userId],
   );
-  if (existing.rows.length > 0) {
+  const liked = (inserted.rowCount ?? 0) > 0;
+  if (!liked) {
     await sql.query(`DELETE FROM forum_likes WHERE post_id = $1 AND user_id = $2`, [
       postId,
       userId,
     ]);
-  } else {
-    // ON CONFLICT guards against double-clicks racing.
-    await sql.query(
-      `INSERT INTO forum_likes (post_id, user_id) VALUES ($1, $2)
-       ON CONFLICT (post_id, user_id) DO NOTHING`,
-      [postId, userId],
-    );
   }
 
   const { rows } = await sql.query(
     `SELECT count(*)::int AS c FROM forum_likes WHERE post_id = $1`,
     [postId],
   );
-  return { liked: existing.rows.length === 0, likeCount: Number(rows[0]?.c) || 0 };
+  return { liked, likeCount: Number(rows[0]?.c) || 0 };
 }

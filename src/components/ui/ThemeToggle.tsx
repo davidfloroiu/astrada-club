@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { useTheme, type ThemePref } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,15 @@ export function ThemeToggle({
   showLabels?: boolean;
 }) {
   const { pref, setPref } = useTheme();
+  // Hydration-safe client flag (false on the server, true after hydration) with
+  // no setState-in-effect, so the active segment matches the SSR HTML and only
+  // honors the localStorage-derived pref once mounted.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+  const activePref = mounted ? pref : "system";
   return (
     <div
       role="radiogroup"
@@ -30,7 +40,7 @@ export function ThemeToggle({
     >
       {options.map((o) => {
         const Icon = o.icon;
-        const active = pref === o.value;
+        const active = activePref === o.value;
         return (
           <button
             key={o.value}

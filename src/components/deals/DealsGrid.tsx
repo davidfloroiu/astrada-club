@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Hourglass } from "lucide-react";
+import { Hourglass, Check } from "lucide-react";
 import { perks } from "@/lib/data";
 import type { Perk } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -70,7 +70,7 @@ export function DealsGrid() {
 
               <div className="mt-3">
                 <Badge tone="azure">
-                  <Hourglass className="h-3 w-3" />
+                  <Hourglass className="h-3.5 w-3.5" />
                   {p.status}
                 </Badge>
               </div>
@@ -89,7 +89,14 @@ export function DealsGrid() {
                 className="mt-5 w-full"
                 onClick={() => toggleNotify(p.id)}
               >
-                {isNotified ? "On the list ✓" : "Notify me when live"}
+                {isNotified ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    On the list
+                  </>
+                ) : (
+                  "Notify me when live"
+                )}
               </Button>
             </div>
           );

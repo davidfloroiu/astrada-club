@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, BellOff, Check } from "lucide-react";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -42,11 +42,15 @@ type State =
 export function NotificationsToggle() {
   const [state, setState] = useState<State>("loading");
   const [sent, setSent] = useState(false);
+  // True while enable()/disable() is mid-flight, so a visibilitychange-driven
+  // reconcile() can't clobber the transient "working" state and double-fire.
+  const inFlight = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
 
     async function reconcile() {
+      if (inFlight.current) return;
       if (!VAPID_PUBLIC_KEY) return setState("unconfigured");
       if (
         typeof window === "undefined" ||
@@ -90,6 +94,7 @@ export function NotificationsToggle() {
 
   async function enable() {
     if (!VAPID_PUBLIC_KEY) return;
+    inFlight.current = true;
     setState("working");
     let sub: PushSubscription | undefined;
     try {
@@ -114,6 +119,8 @@ export function NotificationsToggle() {
     } catch {
       if (sub) await sub.unsubscribe().catch(() => {});
       setState("default");
+    } finally {
+      inFlight.current = false;
     }
   }
 
@@ -128,6 +135,7 @@ export function NotificationsToggle() {
   }
 
   async function disable() {
+    inFlight.current = true;
     setState("working");
     try {
       const reg = await navigator.serviceWorker.ready;
@@ -144,6 +152,8 @@ export function NotificationsToggle() {
       setState("default");
     } catch {
       setState("subscribed");
+    } finally {
+      inFlight.current = false;
     }
   }
 

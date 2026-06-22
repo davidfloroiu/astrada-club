@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   ArrowUpRight,
+  User,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
@@ -24,7 +25,7 @@ import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { NotificationsBell } from "@/components/dashboard/NotificationsBell";
 
 const nav = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
@@ -35,6 +36,7 @@ const nav = [
   { href: "/network", label: "Network", icon: UserPlus },
   { href: "/events", label: "Events", icon: CalendarDays },
   { href: "/deals", label: "Perks", icon: Gift },
+  { href: "/profile", label: "Profile", icon: User },
 ];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
@@ -75,8 +77,9 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
   const { user, signOut } = useAuth();
   return (
     <div className="flex h-full flex-col gap-6 p-5">
-      <div className="px-1 pt-1">
+      <div className="flex items-center justify-between px-1 pt-1">
         <Logo />
+        <NotificationsBell />
       </div>
 
       <NavList onNavigate={onNavigate} />
@@ -89,8 +92,6 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
         Back to site
         <ArrowUpRight className="h-3.5 w-3.5" />
       </Link>
-
-      <ThemeToggle className="w-full justify-between" />
 
       {user && (
         <div className="rounded-2xl border border-line bg-mist/50 p-3">
@@ -152,6 +153,17 @@ export function DashboardShell({
     };
   }, [native]);
 
+  // Lock body scroll while the mobile drawer is open so the page behind it can't
+  // scroll under the overlay (web mobile path; the native shell has no drawer).
+  useEffect(() => {
+    if (!drawer) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [drawer]);
+
   // The dashboard route group is gated server-side; this is a defensive guard.
   if (!user) return null;
 
@@ -163,7 +175,7 @@ export function DashboardShell({
         <header className="shrink-0 bg-canvas/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
           <div className="flex h-14 items-center justify-between px-5">
             <Logo />
-            <ThemeToggle showLabels={false} />
+            <NotificationsBell />
           </div>
         </header>
         {/* The only scroller — overscroll-none keeps its bounce from chaining
@@ -188,13 +200,16 @@ export function DashboardShell({
       {/* Mobile top bar */}
       <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-line bg-canvas/85 px-4 backdrop-blur-xl lg:hidden">
         <Logo />
-        <button
-          onClick={() => setDrawer(true)}
-          className="focus-ring rounded-md p-2 text-navy"
-          aria-label="Open menu"
-        >
-          <Menu className="h-6 w-6" />
-        </button>
+        <div className="flex items-center gap-1">
+          <NotificationsBell />
+          <button
+            onClick={() => setDrawer(true)}
+            className="focus-ring rounded-md p-2 text-navy"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}

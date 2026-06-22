@@ -59,11 +59,11 @@ export function LikeButton({
       className={cn(
         "focus-ring inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
         liked
-          ? "border-rose-200 bg-rose-50 text-rose-600"
+          ? "border-like-line bg-like-soft text-like"
           : "border-line text-slate hover:bg-mist hover:text-navy",
       )}
     >
-      <Heart className={cn("h-4 w-4", liked && "fill-rose-500 text-rose-500")} />
+      <Heart className={cn("h-4 w-4", liked && "fill-like text-like")} />
       {count > 0 ? count : ""}
       <span className={count > 0 ? "sr-only" : undefined}>
         {liked ? "Liked" : "Like"}

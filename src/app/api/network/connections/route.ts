@@ -97,7 +97,9 @@ export async function POST(request: NextRequest): Promise<Response> {
           tag: "network",
         }),
       );
-    } else if (body.action === "accept") {
+    } else if (body.action === "accept" && status === "connected") {
+      // Only notify on a real transition — respond() returns the true current
+      // status, so a stale/duplicate accept (no pending row) won't fire a push.
       after(() =>
         pushToUsers([userId], {
           title: "Connection accepted",

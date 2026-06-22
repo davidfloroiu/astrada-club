@@ -65,6 +65,7 @@ export function CreateEventDialog({
         setSubmitting(false);
         return;
       }
+      setSubmitting(false);
       onCreated(d.event);
     } catch {
       setError("Something went wrong. Please try again.");
@@ -190,7 +191,7 @@ export function CreateEventDialog({
           </div>
 
           {error ? (
-            <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
+            <p className="mt-4 rounded-xl border border-danger-line bg-danger-soft px-4 py-2.5 text-sm text-danger">
               {error}
             </p>
           ) : null}

@@ -37,7 +37,7 @@ export default async function LoginPage({
       </p>
 
       {message && (
-        <div className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700">
+        <div className="mt-6 rounded-xl border border-danger-line bg-danger-soft px-4 py-3 text-sm text-danger">
           {message}
         </div>
       )}

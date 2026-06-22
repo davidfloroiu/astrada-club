@@ -22,22 +22,39 @@ export interface SessionData {
   };
 }
 
-const sessionOptions: SessionOptions = {
-  // 32+ char secret. iron-session encrypts + signs the cookie with it.
-  password: process.env.SESSION_SECRET ?? "dev-only-insecure-password-change-me-32+chars",
-  cookieName: "astrada_session",
-  cookieOptions: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  },
+/**
+ * Resolve the cookie secret. In production we refuse the dev fallback — a
+ * publicly-known key would let anyone forge an admin session (hasAccess +
+ * accessLevel="admin") and bypass every gate — so we throw if SESSION_SECRET is
+ * missing or too short. The check runs at request time (not module load) so it
+ * never breaks the build.
+ */
+function sessionPassword(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (secret && secret.length >= 32) return secret;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "SESSION_SECRET must be set to a 32+ character secret in production.",
+    );
+  }
+  return "dev-only-insecure-password-change-me-32+chars";
+}
+
+const cookieOptions: SessionOptions["cookieOptions"] = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  path: "/",
+  maxAge: 60 * 60 * 24 * 7, // 7 days
 };
 
 export async function getSession() {
   const cookieStore = await cookies();
-  return getIronSession<SessionData>(cookieStore, sessionOptions);
+  return getIronSession<SessionData>(cookieStore, {
+    password: sessionPassword(),
+    cookieName: "astrada_session",
+    cookieOptions,
+  });
 }
 
 /** The public shape of the current user, safe to expose to client components. */

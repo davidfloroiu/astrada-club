@@ -50,7 +50,7 @@ export function PostCard({ post }: { post: ForumPost }) {
         </span>
         <span className="inline-flex items-center gap-1.5">
           <Heart
-            className={cn("h-4 w-4", post.likedByMe && "fill-rose-500 text-rose-500")}
+            className={cn("h-4 w-4", post.likedByMe && "fill-like text-like")}
           />
           {post.likeCount}
         </span>

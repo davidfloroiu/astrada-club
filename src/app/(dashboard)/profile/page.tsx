@@ -119,10 +119,10 @@ export default function ProfilePage() {
             onClick={signOut}
             className="focus-ring flex w-full items-center gap-4 border-t border-line px-4 py-3.5 text-left transition-colors hover:bg-mist/60"
           >
-            <span className="min-w-0 flex-1 text-sm font-medium text-red-700">
+            <span className="min-w-0 flex-1 text-sm font-medium text-danger">
               Sign out
             </span>
-            <LogOut className="h-4 w-4 shrink-0 text-red-700/70" />
+            <LogOut className="h-4 w-4 shrink-0 text-danger" />
           </button>
         </div>
       </section>
