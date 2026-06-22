@@ -63,7 +63,7 @@ export function PostComposer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-navy/40 p-4 backdrop-blur-sm sm:items-center">
+    <div className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-navy/40 p-4 backdrop-blur-sm sm:items-center">
       <div className="my-8 w-full max-w-lg rounded-2xl border border-line bg-paper shadow-[var(--shadow-card)]">
         <div className="flex items-center justify-between border-b border-line px-6 py-4">
           <h2 className="font-display text-lg font-semibold tracking-tight text-ink">

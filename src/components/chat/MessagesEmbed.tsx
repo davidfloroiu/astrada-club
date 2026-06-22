@@ -54,6 +54,17 @@ export default function MessagesEmbed({
   const [channelId, setChannelId] = useState<string | null>(
     initialChannelId ?? null,
   );
+  // Deep-link sync: when the ?c= channel changes via client navigation (e.g.
+  // tapping a connection in "New message" while already on /messages), switch the
+  // open conversation. Adjusting state during render is the React-blessed way to
+  // respond to a changed prop without a setState-in-effect.
+  const [prevInitial, setPrevInitial] = useState<string | null>(
+    initialChannelId ?? null,
+  );
+  if ((initialChannelId ?? null) !== prevInitial) {
+    setPrevInitial(initialChannelId ?? null);
+    if (initialChannelId) setChannelId(initialChannelId);
+  }
   const { resolved } = useTheme();
 
   return (
