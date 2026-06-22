@@ -36,6 +36,24 @@ function applyResolved(resolved: Resolved) {
 }
 
 /**
+ * In the native app, flip the iOS/Android status-bar glyphs so they stay
+ * legible: light text on the dark theme, dark text on the light theme. Loaded
+ * dynamically + guarded so the web bundle never touches Capacitor.
+ */
+async function syncNativeStatusBar(resolved: Resolved) {
+  try {
+    const { Capacitor } = await import("@capacitor/core");
+    if (!Capacitor.isNativePlatform()) return;
+    const { StatusBar, Style } = await import("@capacitor/status-bar");
+    await StatusBar.setStyle({
+      style: resolved === "dark" ? Style.Dark : Style.Light,
+    });
+  } catch {
+    /* not native / plugin unavailable — ignore */
+  }
+}
+
+/**
  * Theme state: light / dark / system (default). System follows the device and
  * reacts to OS changes. A small inline script in layout.tsx applies the right
  * class before paint so there's no flash; this provider keeps it in sync after
@@ -52,6 +70,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         pref === "system" ? (mql.matches ? "dark" : "light") : pref;
       setResolved(next);
       applyResolved(next);
+      void syncNativeStatusBar(next);
     };
     recompute();
     if (pref === "system") {
