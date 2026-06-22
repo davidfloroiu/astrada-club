@@ -4,6 +4,7 @@ import { ArrowLeft, Pin } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { CommentThread } from "@/components/forum/CommentThread";
 import { LikeButton } from "@/components/forum/LikeButton";
+import { MentionText } from "@/components/forum/MentionText";
 import { getSession } from "@/lib/whop/session";
 import { getPost, listComments } from "@/lib/forum/store";
 import { formatDateTime } from "@/lib/utils";
@@ -73,7 +74,7 @@ export default async function ForumPostPage({
         </h1>
         {post.content && (
           <div className="mt-3 whitespace-pre-wrap text-[0.95rem] leading-relaxed text-slate">
-            {post.content}
+            <MentionText text={post.content} />
           </div>
         )}
 

@@ -3,6 +3,7 @@ import { NotificationsClient } from "@/components/notifications/NotificationsCli
 import { getSession } from "@/lib/whop/session";
 import { memberMap, type DirectoryMember } from "@/lib/members/directory";
 import { listIncoming, listIntros } from "@/lib/network/store";
+import { listNotifications } from "@/lib/notifications/store";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Notifications" };
@@ -16,9 +17,10 @@ export default async function NotificationsPage() {
   const session = await getSession();
   const userId = session.userId ?? "";
 
-  const [incomingIds, intros, map] = await Promise.all([
+  const [incomingIds, intros, notifications, map] = await Promise.all([
     userId ? listIncoming(userId) : Promise.resolve([]),
     userId ? listIntros(userId) : Promise.resolve([]),
+    userId ? listNotifications(userId) : Promise.resolve([]),
     memberMap(),
   ]);
 
@@ -29,9 +31,10 @@ export default async function NotificationsPage() {
     <>
       <PageHeader
         title="Notifications"
-        subtitle="Connection requests and intro asks from across the network."
+        subtitle="Mentions, connection requests, and intro asks from across the network."
       />
       <NotificationsClient
+        initialNotifications={notifications}
         initialIncoming={incomingIds.map(enrich)}
         initialIntros={intros.map((i) => ({
           id: i.id,

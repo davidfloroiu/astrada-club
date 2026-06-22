@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
+import { MentionTextarea } from "@/components/ui/MentionTextarea";
+import { MentionText } from "@/components/forum/MentionText";
 import type { ForumComment } from "@/lib/forum/store";
 import { timeAgo } from "@/lib/utils";
 
@@ -59,12 +61,12 @@ export function CommentThread({
       </h2>
 
       <form onSubmit={handleSubmit} className="mt-4">
-        <textarea
+        <MentionTextarea
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={setValue}
           rows={3}
           maxLength={5000}
-          placeholder="Write a reply…"
+          placeholder="Write a reply… Type @ to mention a member."
           className="w-full resize-y rounded-xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-faint transition-colors focus-ring hover:border-navy/20"
         />
         {error ? (
@@ -103,7 +105,7 @@ export function CommentThread({
                   </span>
                 </div>
                 <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-slate">
-                  {c.content}
+                  <MentionText text={c.content} />
                 </p>
               </div>
             </li>

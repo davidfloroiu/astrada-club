@@ -29,11 +29,15 @@ export function NotificationsBell({ className }: { className?: string }) {
     const onVisible = () => {
       if (document.visibilityState === "visible") load();
     };
+    // Refetch when the inbox marks notifications read (avoids a stale badge).
+    const onRead = () => load();
     document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("astrada:notifications-read", onRead);
     const id = window.setInterval(load, 60000);
     return () => {
       active = false;
       document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("astrada:notifications-read", onRead);
       window.clearInterval(id);
     };
   }, [pathname]);

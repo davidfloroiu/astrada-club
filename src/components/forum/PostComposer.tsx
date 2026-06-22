@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import type { ForumPost } from "@/lib/forum/store";
 import { cn } from "@/lib/utils";
+import { MentionTextarea } from "@/components/ui/MentionTextarea";
 
 const fieldClass =
   "w-full rounded-xl border border-line bg-paper px-4 py-2.5 text-sm text-ink placeholder:text-faint transition-colors focus-ring hover:border-navy/20";
@@ -24,6 +25,7 @@ export function PostComposer({
 }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [content, setContent] = useState("");
 
   if (!open) return null;
 
@@ -36,7 +38,7 @@ export function PostComposer({
     const data = new FormData(e.currentTarget);
     const payload = {
       title: String(data.get("title") ?? ""),
-      content: String(data.get("content") ?? ""),
+      content,
     };
 
     try {
@@ -55,6 +57,7 @@ export function PostComposer({
         return;
       }
       setSubmitting(false);
+      setContent("");
       onCreated(d.post);
     } catch {
       setError("Something went wrong. Please try again.");
@@ -95,12 +98,13 @@ export function PostComposer({
 
             <label className="block">
               <span className={labelClass}>Message</span>
-              <textarea
-                name="content"
+              <MentionTextarea
+                value={content}
+                onChange={setContent}
                 required
                 rows={6}
                 maxLength={5000}
-                placeholder="Write your post. Markdown is supported."
+                placeholder="Write your post. Type @ to mention a member."
                 className={cn(fieldClass, "resize-y")}
               />
             </label>

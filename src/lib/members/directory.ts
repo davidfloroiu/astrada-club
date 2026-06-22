@@ -66,6 +66,16 @@ export async function memberMap(): Promise<Map<string, DirectoryMember>> {
   return new Map(members.map((m) => [m.userId, m]));
 }
 
+/** A lookup map keyed by lower-cased username, for resolving @mentions. */
+export async function usernameMap(): Promise<Map<string, DirectoryMember>> {
+  const members = await listMembers();
+  const map = new Map<string, DirectoryMember>();
+  for (const m of members) {
+    if (m.username) map.set(m.username.toLowerCase(), m);
+  }
+  return map;
+}
+
 export async function getMember(userId: string): Promise<DirectoryMember | null> {
   const map = await memberMap();
   return map.get(userId) ?? null;

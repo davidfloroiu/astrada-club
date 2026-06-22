@@ -8,6 +8,7 @@ import {
   type Author,
 } from "@/lib/forum/store";
 import { pushBroadcast } from "@/lib/push/send";
+import { notifyForumMentions } from "@/lib/notifications/mentions";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -86,6 +87,15 @@ export async function POST(request: NextRequest): Promise<Response> {
         body: `${authorName}: ${title}`,
         url: `/forum/${post.id}`,
         tag: `forum-${post.id}`,
+      }),
+    );
+    after(() =>
+      notifyForumMentions({
+        text: content,
+        actorId: actor,
+        actorName: authorName,
+        url: `/forum/${post.id}`,
+        where: "a post",
       }),
     );
     return NextResponse.json({ post }, { status: 201 });

@@ -1,8 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { whopsdk } from "@/lib/whop/sdk";
 import { chatRooms } from "@/lib/whop/config";
-import { pushBroadcast } from "@/lib/push/send";
+import { pushBroadcast, pushToUsers } from "@/lib/push/send";
 import { getSeen, setSeen, isDbConfigured } from "@/lib/chat/seen-store";
+import { createNotifications, type NewNotification } from "@/lib/notifications/store";
+import { memberMap } from "@/lib/members/directory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,6 +39,11 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
 
   let notified = 0;
+  // Resolve the club roster once. Chat mentions only ever notify real members —
+  // msg.mentions is composer-controlled and could carry arbitrary Whop user ids,
+  // so we gate it the same way the forum path does. (@everyone is intentionally
+  // left to the room-summary broadcast rather than fanning out a row per member.)
+  const members = await memberMap();
   for (const room of chatRooms) {
     try {
       const seen = await getSeen(room.channelId);
@@ -86,6 +93,36 @@ export async function GET(request: NextRequest): Promise<Response> {
         tag: `chat-${room.slug}`,
       });
       notified++;
+
+      // Targeted @-mention notifications — Whop exposes message.mentions (user ids).
+      const mentionNotifs: NewNotification[] = [];
+      const mentioned = new Set<string>();
+      for (const msg of fresh) {
+        const who = msg.user?.name || msg.user?.username || "Someone";
+        for (const uid of msg.mentions ?? []) {
+          if (!uid || uid === msg.user?.id || mentioned.has(uid)) continue;
+          if (!members.has(uid)) continue; // only notify real club members
+          mentioned.add(uid);
+          mentionNotifs.push({
+            userId: uid,
+            type: "chat_mention",
+            actorId: msg.user?.id ?? "",
+            actorName: who,
+            title: `${who} mentioned you`,
+            body: `In ${room.name}`,
+            url: `/chat?room=${room.slug}`,
+          });
+        }
+      }
+      if (mentionNotifs.length > 0) {
+        await createNotifications(mentionNotifs);
+        await pushToUsers([...mentioned], {
+          title: `${room.icon ?? "💬"} ${room.name}`,
+          body: "You were mentioned",
+          url: `/chat?room=${room.slug}`,
+          tag: `chat-mention-${room.slug}`,
+        });
+      }
     } catch (err) {
       console.error(`[chat-notify] room ${room.slug} failed`, err);
     }

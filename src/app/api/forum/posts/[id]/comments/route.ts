@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/whop/session";
 import {
   listComments,
@@ -7,6 +7,7 @@ import {
   ForumUnavailable,
   type Author,
 } from "@/lib/forum/store";
+import { notifyForumMentions } from "@/lib/notifications/mentions";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -82,6 +83,16 @@ export async function POST(
       postId: id,
       content,
     });
+    const authorName = session.name ?? "A member";
+    after(() =>
+      notifyForumMentions({
+        text: content,
+        actorId: session.userId!,
+        actorName: authorName,
+        url: `/forum/${id}`,
+        where: "a reply",
+      }),
+    );
     return NextResponse.json({ comment }, { status: 201 });
   } catch (err) {
     if (err instanceof ForumUnavailable) {
