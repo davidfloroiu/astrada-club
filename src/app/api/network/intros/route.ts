@@ -1,6 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/whop/session";
 import { memberMap, type DirectoryMember } from "@/lib/members/directory";
+import { pushToUsers } from "@/lib/push/send";
 import {
   listIntros,
   createIntro,
@@ -83,6 +84,15 @@ export async function POST(request: NextRequest): Promise<Response> {
       targetId: targetUserId,
       note,
     });
+    const actorName = session.name ?? "A member";
+    after(() =>
+      pushToUsers([viaUserId], {
+        title: "Intro request",
+        body: `${actorName} asked you for a warm introduction`,
+        url: "/network",
+        tag: "network-intro",
+      }),
+    );
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err) {
     if (err instanceof NetworkUnavailable) {

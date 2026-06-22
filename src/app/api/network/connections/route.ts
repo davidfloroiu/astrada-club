@@ -1,6 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/whop/session";
 import { memberMap, type DirectoryMember } from "@/lib/members/directory";
+import { pushToUsers } from "@/lib/push/send";
 import {
   getConnectedIds,
   listIncoming,
@@ -82,6 +83,31 @@ export async function POST(request: NextRequest): Promise<Response> {
       default:
         return NextResponse.json({ error: "Unknown action." }, { status: 400 });
     }
+
+    const actorName = session.name ?? "A member";
+    if (body.action === "request") {
+      after(() =>
+        pushToUsers([userId], {
+          title: status === "connected" ? "New connection" : "Connection request",
+          body:
+            status === "connected"
+              ? `${actorName} is now connected with you`
+              : `${actorName} wants to connect with you`,
+          url: "/network",
+          tag: "network",
+        }),
+      );
+    } else if (body.action === "accept") {
+      after(() =>
+        pushToUsers([userId], {
+          title: "Connection accepted",
+          body: `${actorName} accepted your connection request`,
+          url: "/network",
+          tag: "network",
+        }),
+      );
+    }
+
     return NextResponse.json({ status });
   } catch (err) {
     if (err instanceof NetworkUnavailable) {

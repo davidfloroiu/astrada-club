@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { NotificationsToggle } from "@/components/pwa/NotificationsToggle";
 import { useAuth } from "@/lib/auth";
 import { perks } from "@/lib/data";
 import { formatDate } from "@/lib/utils";
@@ -156,6 +157,9 @@ export default function DashboardPage() {
           <p className="mt-1 text-xs text-muted">Nothing live yet</p>
         </div>
       </div>
+
+      {/* Push notifications opt-in (renders only where supported + configured) */}
+      <NotificationsToggle />
 
       {/* Honest preview note */}
       <div className="flex items-start gap-3 rounded-xl border border-line bg-mist/60 px-4 py-3">

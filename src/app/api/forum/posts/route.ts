@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/whop/session";
 import {
   listPosts,
@@ -7,6 +7,7 @@ import {
   ForumUnavailable,
   type Author,
 } from "@/lib/forum/store";
+import { pushBroadcast } from "@/lib/push/send";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,6 +78,16 @@ export async function POST(request: NextRequest): Promise<Response> {
       title,
       content,
     });
+    const actor = session.userId;
+    const authorName = session.name ?? "A member";
+    after(() =>
+      pushBroadcast(actor, {
+        title: "New post in the forum",
+        body: `${authorName}: ${title}`,
+        url: `/forum/${post.id}`,
+        tag: `forum-${post.id}`,
+      }),
+    );
     return NextResponse.json({ post }, { status: 201 });
   } catch (err) {
     if (err instanceof ForumUnavailable) {

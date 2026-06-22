@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/whop/session";
 import {
   listEvents,
@@ -8,6 +8,7 @@ import {
   type NewEvent,
 } from "@/lib/events/store";
 import type { EventType } from "@/lib/types";
+import { pushBroadcast } from "@/lib/push/send";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -96,6 +97,15 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   try {
     const event = await createEvent(newEvent);
+    const actor = session.userId;
+    after(() =>
+      pushBroadcast(actor, {
+        title: "New event",
+        body: `${event.title} · ${event.city}`,
+        url: "/events",
+        tag: `event-${event.id}`,
+      }),
+    );
     return NextResponse.json({ event }, { status: 201 });
   } catch (err) {
     console.error("[events] create failed", err);
