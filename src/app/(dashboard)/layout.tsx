@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { InactiveMembership } from "@/components/dashboard/InactiveMembership";
+import { NativePushRegistrar } from "@/components/pwa/NativePushRegistrar";
 import { getSession } from "@/lib/whop/session";
 import { isNativeApp } from "@/lib/native";
 
@@ -24,5 +25,10 @@ export default async function DashboardLayout({
     redirect("/join?reason=no-access");
   }
 
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <>
+      <NativePushRegistrar />
+      <DashboardShell>{children}</DashboardShell>
+    </>
+  );
 }

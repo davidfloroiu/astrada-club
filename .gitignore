@@ -40,3 +40,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# iCloud sync conflict duplicates ("filename 2.ext") — this folder is under
+# ~/Desktop, which iCloud syncs. Never commit these copies.
+* 2.*
+* 2
+
+# Capacitor / native build artifacts (platform .gitignores cover the rest)
+/ios/App/Pods
+/ios/DerivedData

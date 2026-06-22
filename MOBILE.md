@@ -83,10 +83,55 @@ upload it in the [Google Play Console](https://play.google.com/console).
 
 Bundle id / application id: **`com.astradaclub.app`** · display name: **Astrada**.
 
-## Not yet wired — native push (next phase)
+## Native push notifications
 
-Web push (VAPID) already works in the PWA, but it doesn't work inside the iOS
-WebView. Native push needs the `@capacitor/push-notifications` plugin (installed)
-routed through **APNs/FCM**, plus a server change to send to native device tokens
-alongside the existing web-push subscriptions. This is the planned next step and is
-not part of the current scaffold.
+The code is fully wired and ships **inert** until you add the credentials below —
+nothing breaks in the meantime. In the app, [`NativePushRegistrar`](src/components/pwa/NativePushRegistrar.tsx)
+registers the device and sends its token to [`/api/push/native`](src/app/api/push/native/route.ts);
+the existing `pushToUsers` / `pushBroadcast` helpers then fan out to **both** the
+web-push subscriptions (PWA) **and** native device tokens. iOS tokens are delivered
+straight over **APNs** (`apns2`), Android over **FCM** (`firebase-admin`) — see
+[`src/lib/push/native-send.ts`](src/lib/push/native-send.ts). No Firebase SDK is
+added to the iOS app.
+
+Two independent transports — set up either or both:
+
+### iOS (APNs) — uses your Apple Developer account, no Firebase
+
+1. **APNs key:** [Apple Developer](https://developer.apple.com/account) → Certificates,
+   IDs & Profiles → **Keys** → **+** → enable **Apple Push Notifications service (APNs)**
+   → create, and **download the `.p8`** (you can only download it once). Note the
+   **Key ID** and your **Team ID** (top-right of the portal).
+2. **App capability:** confirm the App ID `com.astradaclub.app` has **Push
+   Notifications** enabled. In Xcode (`npm run cap:ios`): **App** target → **Signing &
+   Capabilities** → **+ Capability** → add **Push Notifications**, and **Background
+   Modes** → check **Remote notifications**.
+3. **Vercel env** (Project → Settings → Environment Variables):
+   - `APNS_KEY` — the full contents of the `.p8` file (paste as-is, including the
+     `-----BEGIN PRIVATE KEY-----` lines)
+   - `APNS_KEY_ID` — the key's ID
+   - `APNS_TEAM_ID` — your Apple Team ID
+   - `APNS_BUNDLE_ID` — `com.astradaclub.app`
+   - `APNS_HOST` — `production`. **Gotcha:** a build run from Xcode onto a device gets
+     a *sandbox* token — set this to `development` while testing a debug build, and
+     back to `production` for TestFlight / App Store builds.
+
+### Android (FCM) — needs a Firebase project
+
+1. **Firebase app:** [Firebase console](https://console.firebase.google.com) → create
+   (or reuse) a project → **Add app → Android**, package name `com.astradaclub.app` →
+   download **`google-services.json`** into `android/app/`.
+2. **Gradle wiring** (Capacitor doesn't add this automatically):
+   - `android/build.gradle` → `dependencies { classpath 'com.google.gms:google-services:4.4.2' }`
+   - `android/app/build.gradle` → at the bottom: `apply plugin: 'com.google.gms.google-services'`
+3. **Server key:** Firebase console → **Project settings → Service accounts →
+   Generate new private key** → download the JSON. Set Vercel env
+   `FIREBASE_SERVICE_ACCOUNT` to that JSON (raw, or base64 if you prefer a single line).
+
+### Verifying
+
+After setting the env vars, redeploy, open the app, sign in, and accept the system
+notification prompt (the app requests it automatically on the dashboard). A new row
+lands in the `native_push_tokens` table. Triggering any notification (new forum post,
+event, connection request) — or the **Send a test** button — should now reach the
+device. Dead tokens are pruned automatically on send.

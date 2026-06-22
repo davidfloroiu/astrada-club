@@ -6,6 +6,11 @@ import {
   removeEndpoints,
   type PushSubscriptionRecord,
 } from "./store";
+import {
+  listForUsers as listNativeForUsers,
+  listAllExcept as listNativeAllExcept,
+} from "./native-store";
+import { sendNative, isNativePushConfigured } from "./native-send";
 
 /**
  * Sends web-push notifications via the VAPID keys. Everything here is
@@ -79,28 +84,55 @@ async function deliver(
   if (dead.length > 0) await removeEndpoints(dead).catch(() => {});
 }
 
-/** Notify specific members. */
-export async function pushToUsers(
-  userIds: string[],
-  payload: PushPayload,
-): Promise<void> {
+// Each transport (web-push + native APNs/FCM) runs independently and best-effort,
+// so a missing config or a failure on one never blocks the other.
+
+async function webToUsers(userIds: string[], payload: PushPayload): Promise<void> {
   if (!isPushConfigured()) return;
   try {
     await deliver(await listForUsers(userIds), payload);
   } catch (err) {
-    console.error("[push] pushToUsers failed", err);
+    console.error("[push] web pushToUsers failed", err);
   }
 }
 
-/** Notify every subscribed member except the one who triggered it. */
+async function nativeToUsers(userIds: string[], payload: PushPayload): Promise<void> {
+  if (!isNativePushConfigured()) return;
+  try {
+    await sendNative(await listNativeForUsers(userIds), payload);
+  } catch (err) {
+    console.error("[push] native pushToUsers failed", err);
+  }
+}
+
+/** Notify specific members across every device they've registered (web + app). */
+export async function pushToUsers(
+  userIds: string[],
+  payload: PushPayload,
+): Promise<void> {
+  if (userIds.length === 0) return;
+  await Promise.all([webToUsers(userIds, payload), nativeToUsers(userIds, payload)]);
+}
+
+/** Notify every subscribed member except the one who triggered it (web + app). */
 export async function pushBroadcast(
   exceptUserId: string,
   payload: PushPayload,
 ): Promise<void> {
-  if (!isPushConfigured()) return;
-  try {
-    await deliver(await listAllExcept(exceptUserId), payload);
-  } catch (err) {
-    console.error("[push] pushBroadcast failed", err);
+  const tasks: Promise<void>[] = [];
+  if (isPushConfigured()) {
+    tasks.push(
+      deliver(await listAllExcept(exceptUserId), payload).catch((err) =>
+        console.error("[push] web pushBroadcast failed", err),
+      ),
+    );
   }
+  if (isNativePushConfigured()) {
+    tasks.push(
+      sendNative(await listNativeAllExcept(exceptUserId), payload).catch((err) =>
+        console.error("[push] native pushBroadcast failed", err),
+      ),
+    );
+  }
+  await Promise.all(tasks);
 }
