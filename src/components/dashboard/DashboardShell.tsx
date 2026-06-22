@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -130,6 +130,28 @@ export function DashboardShell({
   const { user } = useAuth();
   const [drawer, setDrawer] = useState(false);
 
+  // In the native app, lock the document so it can't rubber-band/overscroll
+  // (which dragged the whole page + the fixed tab bar). An inner container
+  // scrolls instead. Restored on unmount / on the web.
+  useEffect(() => {
+    if (!native) return;
+    const html = document.documentElement;
+    const body = document.body;
+    const prev = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      overscroll: body.style.overscrollBehavior,
+    };
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    return () => {
+      html.style.overflow = prev.htmlOverflow;
+      body.style.overflow = prev.bodyOverflow;
+      body.style.overscrollBehavior = prev.overscroll;
+    };
+  }, [native]);
+
   // The dashboard route group is gated server-side; this is a defensive guard.
   if (!user) return null;
 
@@ -137,15 +159,19 @@ export function DashboardShell({
   // bottom — no sidebar, no hamburger.
   if (native) {
     return (
-      <div className="min-h-dvh bg-canvas">
-        <header className="sticky top-0 z-40 bg-canvas/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+      <div className="fixed inset-0 flex flex-col bg-canvas">
+        <header className="shrink-0 bg-canvas/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
           <div className="flex h-14 items-center justify-between px-5">
             <Logo />
             <ThemeToggle showLabels={false} />
           </div>
         </header>
-        <main className="mx-auto max-w-2xl px-5 pb-[calc(env(safe-area-inset-bottom)+104px)] pt-6">
-          {children}
+        {/* The only scroller — overscroll-none keeps its bounce from chaining
+            to the document, so the page + tab bar stay put. */}
+        <main className="flex-1 overflow-y-auto overscroll-none">
+          <div className="mx-auto max-w-2xl px-5 pb-[calc(env(safe-area-inset-bottom)+104px)] pt-6">
+            {children}
+          </div>
         </main>
         <MobileTabBar />
       </div>
