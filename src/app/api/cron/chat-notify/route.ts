@@ -39,6 +39,8 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
 
   let notified = 0;
+  let errors = 0;
+  let lastError: string | null = null;
   // Resolve the club roster once. Chat mentions only ever notify real members —
   // msg.mentions is composer-controlled and could carry arbitrary Whop user ids,
   // so we gate it the same way the forum path does. (@everyone is intentionally
@@ -124,9 +126,29 @@ export async function GET(request: NextRequest): Promise<Response> {
         });
       }
     } catch (err) {
+      errors++;
+      const e = err as { status?: number; statusCode?: number; message?: string };
+      lastError =
+        e.status ?? e.statusCode
+          ? `HTTP ${e.status ?? e.statusCode}`
+          : (e.message ?? "error").slice(0, 120);
       console.error(`[chat-notify] room ${room.slug} failed`, err);
     }
   }
 
-  return NextResponse.json({ ok: true, rooms: chatRooms.length, notified });
+  // errors > 0 (esp. HTTP 403) almost always means the company WHOP_API_KEY is
+  // missing the chat:read scope — surfaced here so chat-read health is verifiable
+  // by hitting this endpoint (with the CRON_SECRET bearer) and reading the JSON.
+  return NextResponse.json({
+    ok: true,
+    rooms: chatRooms.length,
+    notified,
+    errors,
+    ...(errors > 0
+      ? {
+          hint: "messages.list is failing — ensure WHOP_API_KEY has the chat:read scope",
+          lastError,
+        }
+      : {}),
+  });
 }
