@@ -41,6 +41,7 @@ type State =
  */
 export function NotificationsToggle() {
   const [state, setState] = useState<State>("loading");
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,6 +117,16 @@ export function NotificationsToggle() {
     }
   }
 
+  async function sendTest() {
+    try {
+      await fetch("/api/push/test", { method: "POST" });
+      setSent(true);
+      window.setTimeout(() => setSent(false), 3000);
+    } catch {
+      /* ignore */
+    }
+  }
+
   async function disable() {
     setState("working");
     try {
@@ -167,15 +178,25 @@ export function NotificationsToggle() {
 
       {state !== "denied" &&
         (subscribed ? (
-          <button
-            type="button"
-            onClick={disable}
-            disabled={working}
-            className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium text-slate transition-colors hover:bg-mist hover:text-navy disabled:opacity-60"
-          >
-            <Check className="h-4 w-4 text-azure" />
-            On
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={sendTest}
+              disabled={working}
+              className="focus-ring rounded-full px-3 py-2 text-sm font-medium text-azure transition-colors hover:bg-azure/10 disabled:opacity-60"
+            >
+              {sent ? "Sent ✓" : "Send a test"}
+            </button>
+            <button
+              type="button"
+              onClick={disable}
+              disabled={working}
+              className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-4 py-2 text-sm font-medium text-slate transition-colors hover:bg-mist hover:text-navy disabled:opacity-60"
+            >
+              <Check className="h-4 w-4 text-azure" />
+              On
+            </button>
+          </div>
         ) : (
           <button
             type="button"
