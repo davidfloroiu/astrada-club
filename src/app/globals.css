@@ -60,6 +60,101 @@
   color-scheme: light;
 }
 
+/* ── Dark mode ─────────────────────────────────────────────────
+   Black + navy ground with light ink and brighter azure accents.
+   Overrides the design tokens; 600+ semantic utilities re-theme for free.
+   Applied by adding `.dark` to <html> (see ThemeProvider + the no-FOUC
+   script in layout.tsx). Default follows the device. */
+.dark {
+  color-scheme: dark;
+
+  /* Surfaces — near-black navy ladder */
+  --color-canvas: #080d18;
+  --color-paper: #0f1828;
+  --color-mist: #18233a;
+  --color-cloud: #26344f;
+
+  /* Navy family — primary buttons + hero blocks, lifted so they read on dark */
+  --color-navy: #22497f;
+  --color-navy-600: #2c5891;
+  --color-navy-400: #3f6aa6;
+
+  /* Ink / text — light for legibility */
+  --color-ink: #f2f5fa;
+  --color-slate: #afb9cc;
+  --color-muted: #828da4;
+  --color-faint: #606a82;
+
+  /* Lines — light + translucent on dark */
+  --color-line: rgba(255, 255, 255, 0.1);
+  --color-line-strong: rgba(255, 255, 255, 0.18);
+  --color-line-light: rgba(255, 255, 255, 0.08);
+
+  /* Accent — brighter azure so links/icons pop on dark */
+  --color-azure: #6f9fe0;
+  --color-azure-bright: #92b8ef;
+  --color-azure-deep: #b9d3f7;
+
+  --color-positive: #34c08a;
+
+  /* Shadows lean on darkness + a faint top light */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -16px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.4), 0 30px 60px -22px rgba(0, 0, 0, 0.75);
+  --shadow-navy: 0 18px 50px -16px rgba(0, 0, 0, 0.6);
+}
+
+/* `navy` doubles as a text color (text-navy / hover:text-navy). On dark that
+   would be navy-on-dark, so remap the text role to light ink. (Unlayered rules
+   beat Tailwind's utility layer, so no !important needed.) */
+.dark .text-navy,
+.dark .hover\:text-navy:hover {
+  color: var(--color-ink);
+}
+
+/* Tab bar glass — dark variant */
+.dark .tabbar-capsule {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 44, 70, 0.62),
+    rgba(14, 22, 38, 0.74)
+  );
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 12px 32px -12px rgba(0, 0, 0, 0.7),
+    0 3px 10px -6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.16);
+}
+.dark .tabbar-capsule::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.32) 50%,
+    transparent
+  );
+}
+.dark .tabbar-lens {
+  background: linear-gradient(
+    180deg,
+    rgba(86, 116, 176, 0.42),
+    rgba(40, 60, 100, 0.16)
+  );
+  box-shadow:
+    0 6px 14px -6px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.28),
+    inset 0 -7px 10px -9px rgba(0, 0, 0, 0.5);
+}
+.dark .tabbar-tab {
+  color: rgba(233, 238, 247, 0.56);
+}
+.dark .tabbar-tab[data-active="true"] {
+  color: var(--color-ink);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dark .tabbar-capsule {
+    background: rgba(14, 22, 38, 0.96);
+  }
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { Container } from "@/components/ui/Container";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const columns = [
   {
@@ -68,7 +69,10 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-line pt-8 text-xs text-muted sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} Astrada Club. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <p>© {new Date().getFullYear()} Astrada Club. All rights reserved.</p>
+            <ThemeToggle showLabels={false} />
+          </div>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="transition-colors hover:text-navy">
               Privacy

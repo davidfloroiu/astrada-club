@@ -24,6 +24,7 @@ import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const nav = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
@@ -89,6 +90,8 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
         <ArrowUpRight className="h-3.5 w-3.5" />
       </Link>
 
+      <ThemeToggle className="w-full justify-between" />
+
       {user && (
         <div className="rounded-2xl border border-line bg-mist/50 p-3">
           <div className="flex items-center gap-3">
@@ -136,8 +139,9 @@ export function DashboardShell({
     return (
       <div className="min-h-dvh bg-canvas">
         <header className="sticky top-0 z-40 bg-canvas/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
-          <div className="flex h-14 items-center px-5">
+          <div className="flex h-14 items-center justify-between px-5">
             <Logo />
+            <ThemeToggle showLabels={false} />
           </div>
         </header>
         <main className="mx-auto max-w-2xl px-5 pb-[calc(env(safe-area-inset-bottom)+104px)] pt-6">

@@ -2,8 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "@/lib/theme";
 import { getSession, toSessionUser } from "@/lib/whop/session";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+
+// Runs before paint to set the theme class — avoids a flash of the wrong theme.
+const themeScript = `(function(){try{var p=localStorage.getItem('astrada-theme')||'system';var d=p==='dark'||(p==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
 
 const hanken = Hanken_Grotesk({
   variable: "--font-hanken",
@@ -71,7 +75,10 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full bg-canvas text-ink">
-        <AuthProvider initialUser={user}>{children}</AuthProvider>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <ThemeProvider>
+          <AuthProvider initialUser={user}>{children}</AuthProvider>
+        </ThemeProvider>
         <ServiceWorkerRegister />
       </body>
     </html>

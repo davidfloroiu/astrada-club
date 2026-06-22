@@ -14,6 +14,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { NotificationsToggle } from "@/components/pwa/NotificationsToggle";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useAuth } from "@/lib/auth";
 
 // Secondary destinations that aren't in the bottom tab bar live here.
@@ -51,6 +52,19 @@ export default function ProfilePage() {
       </header>
 
       <NotificationsToggle />
+
+      <section className="space-y-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-faint">
+          Appearance
+        </h2>
+        <div className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-paper px-4 py-3.5">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-ink">Theme</p>
+            <p className="text-xs text-muted">Light, dark, or match your device.</p>
+          </div>
+          <ThemeToggle />
+        </div>
+      </section>
 
       <section className="space-y-3">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-faint">
