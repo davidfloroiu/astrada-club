@@ -196,6 +196,18 @@ body {
 .animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
 .animate-drift { animation: drift 16s ease-in-out infinite; }
 
+/* Page enter — eases each in-app navigation in (see (dashboard)/template.tsx).
+   The global prefers-reduced-motion rule below neutralizes it automatically. */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: page-enter 0.34s var(--ease-out-expo) both;
+  /* Hint the compositor so the fade/slide stays smooth in the WebView. */
+  will-change: opacity, transform;
+}
+
 /* Reveal-on-scroll */
 .reveal {
   opacity: 0;
