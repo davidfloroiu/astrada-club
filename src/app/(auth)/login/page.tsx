@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AstradaMark } from "@/components/ui/Logo";
+import { isNativeApp } from "@/lib/native";
 
 export const metadata = { title: "Member Login" };
 
@@ -22,6 +23,8 @@ export default async function LoginPage({
     returnTo ?? "/dashboard",
   )}`;
   const message = error ? errorMessages[error] ?? errorMessages.invalid : null;
+  // In the native app there's no apply/join funnel — sign-in only.
+  const native = await isNativeApp();
 
   return (
     <div className="card-surface w-full max-w-md p-8">
@@ -47,14 +50,18 @@ export default async function LoginPage({
         <ArrowRight className="h-4 w-4" />
       </a>
 
-      <div className="silver-divider my-7" />
+      {!native && (
+        <>
+          <div className="silver-divider my-7" />
 
-      <p className="text-center text-sm text-muted">
-        Not a member yet?{" "}
-        <Link href="/join" className="text-azure hover:text-azure-bright">
-          Apply to join
-        </Link>
-      </p>
+          <p className="text-center text-sm text-muted">
+            Not a member yet?{" "}
+            <Link href="/join" className="text-azure hover:text-azure-bright">
+              Apply to join
+            </Link>
+          </p>
+        </>
+      )}
 
       <p className="mt-6 text-center text-xs text-faint">
         Secured by Whop · OAuth 2.1 with PKCE

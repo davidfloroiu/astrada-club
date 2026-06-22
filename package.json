@@ -6,9 +6,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cap:sync": "cap sync",
+    "cap:ios": "cap open ios",
+    "cap:android": "cap open android",
+    "cap:run:ios": "cap run ios",
+    "cap:assets": "node native/gen-assets.mjs && capacitor-assets generate --iconBackgroundColor '#0E1B30' --iconBackgroundColorDark '#0E1B30' --splashBackgroundColor '#edebe5' --splashBackgroundColorDark '#0E1B30' && rm -rf icons public/manifest.webmanifest"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.7",
+    "@capacitor/app": "^7.1.2",
+    "@capacitor/browser": "^7.0.5",
+    "@capacitor/core": "^7.6.7",
+    "@capacitor/ios": "^7.6.7",
+    "@capacitor/keyboard": "^7.0.6",
+    "@capacitor/push-notifications": "^7.0.6",
+    "@capacitor/splash-screen": "^7.0.5",
+    "@capacitor/status-bar": "^7.0.6",
     "@vercel/postgres": "^0.10.0",
     "@whop/checkout": "^0.1.0",
     "@whop/embedded-components-react-js": "^1.0.0",
@@ -25,6 +39,8 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.6.7",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { InactiveMembership } from "@/components/dashboard/InactiveMembership";
 import { getSession } from "@/lib/whop/session";
+import { isNativeApp } from "@/lib/native";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +16,13 @@ export default async function DashboardLayout({
   // Not signed in → Whop OAuth.
   if (!session.userId) redirect("/login");
 
-  // Signed in but no active membership → join page (on-domain checkout + message).
-  if (!session.hasAccess) redirect("/join?reason=no-access");
+  // Signed in but no active membership. On the web → join page. In the native
+  // app we can't surface a join/purchase path, and /join would bounce back here
+  // via the proxy, so show a terminal notice instead.
+  if (!session.hasAccess) {
+    if (await isNativeApp()) return <InactiveMembership />;
+    redirect("/join?reason=no-access");
+  }
 
   return <DashboardShell>{children}</DashboardShell>;
 }
