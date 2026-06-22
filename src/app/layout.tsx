@@ -58,6 +58,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#edebe5",
+  // Paint edge-to-edge under the iOS status bar and home indicator so the page
+  // background fills the safe areas (no light bands in the native app), and so
+  // env(safe-area-inset-*) returns real values for the header + tab bar.
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({
