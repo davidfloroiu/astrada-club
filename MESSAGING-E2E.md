@@ -58,6 +58,10 @@ labeled, weaker fallback) — that's the honest cost of real E2E.
 - `e2e_backups(user_id, blob, kdf_params, updated_at)`
 
 ## Phased roadmap (each phase independently shippable)
+> Revised after review (see end): library = **vodozemac** (Apache-2.0, Signal's
+> Double Ratchet) not libsignal; MVP = **1:1 single-device + verification** first,
+> then groups → external audit → defer multi-device + backup. Phases below keep
+> the full-system reference; build order follows the revised MVP.
 0. **Foundations** — Ably account + token-auth endpoint; the Capacitor libsignal
    plugin spike (prove encrypt/decrypt round-trip on iOS+Android with keys in the
    keystore); finalize schema. *Highest-risk spike → do first.*
